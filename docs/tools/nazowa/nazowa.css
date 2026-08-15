@@ -1,0 +1,14 @@
+h2 { font-size: 16px; margin: 8px 0; }
+.err { color: #8b3d2f; }
+#pic-terms, #pic-groups { width: 4.5em; }
+.chunks {
+  padding-left: 1.6em;
+  font-family: Consolas, "Yu Gothic UI", monospace;
+  font-size: 16px;
+}
+.chunks li {
+  cursor: pointer;
+  margin: 4px 0;
+}
+.chunks li:hover { color: var(--accent); }
+select { width: auto; }

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>謎ワ</title>
+  <link rel="stylesheet" href="../../css/tool.css" />
+  <link rel="stylesheet" href="nazowa.css" />
+</head>
+<body>
+  <div class="wrap">
+    <h1>謎ワ</h1>
+    <p class="hint">謎解きワールド向けの、問題専用ソルバーです。上の切替で問題を選びます。</p>
+    <div class="inner-tabs" id="inner-tabs">
+      <button type="button" class="inner-tab is-active" data-panel="pic">A picture in</button>
+    </div>
+
+    <section class="panel is-on" id="panel-pic">
+      <h2>A picture in</h2>
+      <p class="hint">小数を連分数にし、末尾を黄金比 φ で補って復元します。小数部分を4桁ずつ切り出します。</p>
+      <div class="row">
+        <input id="pic-in" type="text" inputmode="decimal" placeholder="小数（例: 0.1234…）" />
+        <button type="button" class="act" id="pic-go">計算</button>
+      </div>
+      <div class="toolbar">
+        <label>連分数の項数
+          <input id="pic-terms" type="number" min="3" max="40" value="20" />
+        </label>
+        <label>4桁グループ
+          <input id="pic-groups" type="number" min="1" max="25" value="10" />
+        </label>
+      </div>
+      <p class="parsed" id="pic-status">小数を入れて計算してください。</p>
+      <p class="err" id="pic-err"></p>
+      <pre class="mono" id="pic-cf"></pre>
+      <pre class="mono" id="pic-val"></pre>
+      <ol id="pic-chunks" class="chunks"></ol>
+    </section>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>

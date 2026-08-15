@@ -8,4 +8,5 @@ window.SITE_TABS = [
   { id: "tanuki", title: "たぬき", file: "tools/tanuki/index.html" },
   { id: "poly", title: "ポリオミノ", file: "tools/poly/index.html" },
   { id: "skel", title: "スケルトン", file: "tools/skel/index.html" },
+  { id: "nazowa", title: "謎ワ", file: "tools/nazowa/index.html" },
 ];
