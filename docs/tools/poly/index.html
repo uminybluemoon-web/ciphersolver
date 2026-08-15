@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ポリオミノソルバー</title>
+  <link rel="stylesheet" href="../../css/tool.css" />
+  <link rel="stylesheet" href="poly.css" />
+</head>
+<body>
+  <div class="wrap">
+    <h1>ポリオミノソルバー</h1>
+    <p class="hint">盤面とピースをマス目で描き、はまり方を列挙します。盤のマスを選んで文字を入力、ピースのマスを選んで 1〜9 を付けると、解ごとに文字拾いができます。</p>
+
+    <div class="editors">
+      <section>
+        <h2>ボード <small>最大 12</small></h2>
+        <div class="toolbar">
+          <button type="button" class="act" id="board-minus">減らす</button>
+          <span id="board-size-lab">8</span>
+          <button type="button" class="act" id="board-plus">増やす</button>
+          <button type="button" class="act" id="board-fill">矩形で埋める</button>
+          <button type="button" class="act" id="board-clear">盤をクリア</button>
+        </div>
+        <div class="grid-wrap board-theme" id="board-grid"></div>
+        <p class="hint" id="board-stat"></p>
+      </section>
+      <section>
+        <h2>ピース</h2>
+        <div class="toolbar">
+          <button type="button" class="act" id="piece-clear">描画をクリア</button>
+          <button type="button" class="act" id="piece-add">ピースをソルバーに追加</button>
+        </div>
+        <div class="grid-wrap piece-theme" id="piece-grid"></div>
+        <p class="hint">形をクリックで描き、マスを選んで 1〜9 を入力（0 で数字だけ消す）。数字のあるマスが文字拾いの順です。最大 15 個。</p>
+      </section>
+    </div>
+
+    <h2>ソルバー</h2>
+    <div class="toolbar">
+      <label class="chk"><input type="checkbox" id="opt-rot" checked /> 回転を許す</label>
+      <label class="chk"><input type="checkbox" id="opt-flip" checked /> 反転を許す</label>
+      <label class="chk"><input type="checkbox" id="opt-subset" /> 一部のピースを使う</label>
+      <button type="button" class="act" id="sample">サンプル（4×3）</button>
+      <button type="button" class="act" id="sample-pent">サンプル（ペントミノ 6×10）</button>
+      <button type="button" class="act" id="sample-pick">サンプル（文字拾い）</button>
+      <button type="button" class="act" id="solve">計算開始</button>
+      <button type="button" class="act" id="stop" hidden>中止</button>
+    </div>
+    <p class="hint">「一部のピースを使う」をオンにすると、全部は使わず盤面だけ埋めます。文字拾いはピース内の数字順、そのあとピース追加順につなぎます。</p>
+
+    <h3>ピース一覧 <small>クリックで削除</small></h3>
+    <div id="piece-list" class="piece-list"></div>
+
+    <p class="parsed" id="status">サンプルを入れるか、盤とピースを設定して計算開始。</p>
+    <h3>答え一覧</h3>
+    <div id="sols" class="sols"></div>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>

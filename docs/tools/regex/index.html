@@ -13,6 +13,7 @@
       border-radius: 6px;
       padding: 4px 8px;
       font-family: Consolas, "Yu Gothic UI", monospace;
+      cursor: pointer;
     }
     .err { color: #8b3d2f; }
   </style>
@@ -38,6 +39,7 @@
     </div>
     <p class="parsed" id="status">対象を選んで検索してください。初回はその辞書を読み込みます。</p>
     <p class="err" id="err"></p>
+    <div class="hits" id="hits"></div>
     <p class="hint">日本語は JMdict（EDRDG）、英語は公開英単語リストです。結果をクリックでコピー。</p>
   </div>
   <script src="app.js"></script>

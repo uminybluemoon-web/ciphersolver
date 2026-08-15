@@ -33,7 +33,7 @@
     }
     let re;
     try {
-      re = new RegExp(raw, document.getElementById("icase").checked ? "i" : "");
+      re = new RegExp(raw, (document.getElementById("icase").checked ? "i" : "") + "u");
     } catch (e) {
       err.textContent = "正規表現が不正です: " + e.message;
       return;
@@ -54,6 +54,7 @@
         found.push(w);
         if (found.length > cap) break;
       }
+      re.lastIndex = 0;
     }
     const extra = found.length > cap;
     const show = extra ? found.slice(0, cap) : found;

@@ -94,8 +94,8 @@
       ncolsEl.value = 1;
     }
 
-    const cols = 4 * C + 1;
-    const rows = 4 * R + 1;
+    const cols = 2 * C + 3;
+    const rows = 2 * R + 3;
     coin.style.gridTemplateColumns = `repeat(${cols}, minmax(40px, 64px))`;
     coin.style.gridTemplateRows = `repeat(${rows}, auto)`;
 
@@ -105,43 +105,51 @@
 
     for (let r = 0; r < R; r++) {
       for (let c = 0; c < C; c++) {
-        const gr = 1 + 4 * r;
-        const gc = 1 + 4 * c;
+        const cr = 3 + 2 * r;
+        const cc = 3 + 2 * c;
         const single = R === 1 && C === 1;
         const useN = !single || armActive1x1("N");
         const useS = !single || armActive1x1("S");
         const useW = !single || armActive1x1("W");
         const useE = !single || armActive1x1("E");
 
-        if (!inputs[ns(r, c)]) {
-          makeInput(ns(r, c), gr, gc + 2, r === 0 ? "上" : "間", false);
+        if (r === 0) {
+          makeInput(ns(0, c), 1, cc, C === 1 ? "上" : "上" + (c + 1), false);
+          const nEid = `N-${r}-${c}`;
+          makeArrow(nEid, "N", 2, cc);
+          edges.push({ eid: nEid, kind: "N", outer: ns(0, c), center: ctr(r, c), on: useN });
         }
-        const nEid = `N-${r}-${c}`;
-        makeArrow(nEid, "N", gr + 1, gc + 2);
-        edges.push({ eid: nEid, kind: "N", outer: ns(r, c), center: ctr(r, c), on: useN });
 
-        if (!inputs[ew(r, c)]) {
-          makeInput(ew(r, c), gr + 2, gc, c === 0 ? "左" : "間", false);
+        if (c === 0) {
+          makeInput(ew(r, 0), cr, 1, R === 1 ? "左" : "左" + (r + 1), false);
+          const wEid = `W-${r}-${c}`;
+          makeArrow(wEid, "W", cr, 2);
+          edges.push({ eid: wEid, kind: "W", outer: ew(r, 0), center: ctr(r, c), on: useW });
         }
-        const wEid = `W-${r}-${c}`;
-        makeArrow(wEid, "W", gr + 2, gc + 1);
-        edges.push({ eid: wEid, kind: "W", outer: ew(r, c), center: ctr(r, c), on: useW });
 
-        makeInput(ctr(r, c), gr + 2, gc + 2, "中", true);
+        makeInput(ctr(r, c), cr, cc, "中", true);
 
-        const eEid = `E-${r}-${c}`;
-        makeArrow(eEid, "E", gr + 2, gc + 3);
-        if (!inputs[ew(r, c + 1)]) {
-          makeInput(ew(r, c + 1), gr + 2, gc + 4, c + 1 === C ? "右" : "間", false);
+        if (c === C - 1) {
+          const eEid = `E-${r}-${c}`;
+          makeArrow(eEid, "E", cr, cc + 1);
+          makeInput(ew(r, C), cr, cc + 2, R === 1 ? "右" : "右" + (r + 1), false);
+          edges.push({ eid: eEid, kind: "E", outer: ew(r, C), center: ctr(r, c), on: useE });
+        } else {
+          const eEid = `E-${r}-${c}`;
+          makeArrow(eEid, "E", cr, cc + 1);
+          edges.push({ eid: eEid, kind: "E", outer: ctr(r, c + 1), center: ctr(r, c), on: true });
         }
-        edges.push({ eid: eEid, kind: "E", outer: ew(r, c + 1), center: ctr(r, c), on: useE });
 
-        const sEid = `S-${r}-${c}`;
-        makeArrow(sEid, "S", gr + 3, gc + 2);
-        if (!inputs[ns(r + 1, c)]) {
-          makeInput(ns(r + 1, c), gr + 4, gc + 2, r + 1 === R ? "下" : "間", false);
+        if (r === R - 1) {
+          const sEid = `S-${r}-${c}`;
+          makeArrow(sEid, "S", cr + 1, cc);
+          makeInput(ns(R, c), cr + 2, cc, C === 1 ? "下" : "下" + (c + 1), false);
+          edges.push({ eid: sEid, kind: "S", outer: ns(R, c), center: ctr(r, c), on: useS });
+        } else {
+          const sEid = `S-${r}-${c}`;
+          makeArrow(sEid, "S", cr + 1, cc);
+          edges.push({ eid: sEid, kind: "S", outer: ctr(r + 1, c), center: ctr(r, c), on: true });
         }
-        edges.push({ eid: sEid, kind: "S", outer: ns(r + 1, c), center: ctr(r, c), on: useS });
       }
     }
 
@@ -227,7 +235,7 @@
         "3字モードは1個のみ。縦（上・中・下）と横（左・中・右）。連結1は横だけ、2は縦横。矢印で読み順を反転します。";
     } else if (multi) {
       modeHint.textContent =
-        "隣り合う和同開珎は間の漢字を共有します。空欄は未知、入っている字は確定です。使わない枝は空欄のままにしてください。";
+        "隣り合う中央は矢印だけでつなぎます（間のマスはありません）。空欄は未知、入っている字は確定です。";
     } else {
       modeHint.textContent =
         "1個のときの連結 = 使う方向の数（2なら左右、3なら左右＋上、4なら四方向）。空欄は無視します。横・縦の個数を増やすと連結できます。";
@@ -290,10 +298,27 @@
   }
 
   function activeEdges() {
-    return edges.filter((e) => {
-      if (!e.on) return false;
-      return val(e.outer) || val(e.center);
+    const first = edges.filter((e) => e.on && (val(e.outer) || val(e.center)));
+    const involved = new Set();
+    first.forEach((e) => {
+      involved.add(e.outer);
+      involved.add(e.center);
     });
+    const act = [...first];
+    let changed = true;
+    while (changed) {
+      changed = false;
+      for (const e of edges) {
+        if (!e.on || act.includes(e)) continue;
+        if (involved.has(e.outer) || involved.has(e.center)) {
+          act.push(e);
+          involved.add(e.outer);
+          involved.add(e.center);
+          changed = true;
+        }
+      }
+    }
+    return act;
   }
 
   function solve2linked() {
@@ -390,15 +415,13 @@
       const c = +p[2] + 1;
       const R = +nrowsEl.value || 1;
       if (r === 0) return R === 1 ? "上" : `上${c}`;
-      if (r === R) return R === 1 ? "下" : `下${c}`;
-      return `縦間(${c},${r})`;
+      return R === 1 ? "下" : `下${c}`;
     }
     const r = +p[1] + 1;
     const c = +p[2];
     const C = +ncolsEl.value || 1;
     if (c === 0) return C === 1 ? "左" : `左${r}`;
-    if (c === C) return C === 1 ? "右" : `右${r}`;
-    return `横間(${c},${r})`;
+    return C === 1 ? "右" : `右${r}`;
   }
 
   function wordsForAssign(assign) {
