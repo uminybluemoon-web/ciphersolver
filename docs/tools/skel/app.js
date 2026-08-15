@@ -148,16 +148,16 @@
   function syncCharInput(focus) {
     if (!selected || !grid[selected.r][selected.c].on) {
       charInp.value = "";
-      numInp.value = "";
+      if (numInp) numInp.value = "";
       charInp.disabled = true;
-      numInp.disabled = true;
+      if (numInp) numInp.disabled = true;
       return;
     }
     charInp.disabled = false;
-    numInp.disabled = false;
+    if (numInp) numInp.disabled = false;
     const cell = grid[selected.r][selected.c];
     if (!composing) charInp.value = cell.ch || "";
-    numInp.value = cell.n ? String(cell.n) : "";
+    if (numInp) numInp.value = cell.n ? String(cell.n) : "";
     if (focus) setTimeout(() => charInp.focus(), 0);
   }
 
@@ -177,7 +177,7 @@
       grid[r][c].ch = "";
     } else if (/^\d+$/.test(t)) {
       grid[r][c].n = Math.max(0, Math.min(99, +t));
-      numInp.value = grid[r][c].n ? String(grid[r][c].n) : "";
+      if (numInp) numInp.value = grid[r][c].n ? String(grid[r][c].n) : "";
     } else {
       grid[r][c].ch = lastChar(t);
     }
@@ -191,7 +191,7 @@
     if (!grid[r][c].on) return;
     const t = (raw || "").trim();
     grid[r][c].n = /^\d+$/.test(t) ? Math.max(0, Math.min(99, +t)) : 0;
-    numInp.value = grid[r][c].n ? String(grid[r][c].n) : "";
+    if (numInp) numInp.value = grid[r][c].n ? String(grid[r][c].n) : "";
     refreshSelectedCell();
   }
 
@@ -262,6 +262,9 @@
     painting = null;
   });
 
+  grid = emptyGrid(size, false);
+  loadSample();
+
   charInp.addEventListener("compositionstart", () => {
     composing = true;
   });
@@ -280,8 +283,8 @@
       applyChar("");
     }
   });
-  numInp.addEventListener("input", () => applyNum(numInp.value));
-  numInp.addEventListener("keydown", (e) => {
+  numInp?.addEventListener("input", () => applyNum(numInp.value));
+  numInp?.addEventListener("keydown", (e) => {
     if (e.key === "Backspace" || e.key === "Delete") {
       if (!numInp.value) {
         e.preventDefault();
@@ -518,9 +521,6 @@
       });
     }, 20);
   }
-
-  grid = emptyGrid(size, false);
-  loadSample();
 
   document.getElementById("minus").addEventListener("click", () => resize(size - 1));
   document.getElementById("plus").addEventListener("click", () => resize(size + 1));

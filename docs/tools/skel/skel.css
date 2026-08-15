@@ -11,9 +11,11 @@ h2 { font-size: 16px; margin: 12px 0 8px; }
   display: grid;
   width: max-content;
   max-width: 100%;
+  min-height: 28px;
   gap: 2px;
   user-select: none;
   touch-action: none;
+  margin: 8px 0;
 }
 .cell {
   width: 28px;
