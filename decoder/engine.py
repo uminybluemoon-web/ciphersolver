@@ -201,6 +201,8 @@ def build_schemes() -> list[Scheme]:
         _list_scheme("曜日（日曜始まり・英語）", T.WEEKDAYS_EN, also_initials=True),
         _list_scheme("七つの大罪（読み）", T.DEADLY_SINS_JP, also_initials=True),
         _list_scheme("七つの大罪（英語）", T.DEADLY_SINS_EN, also_initials=True),
+        _list_scheme("都道府県（番号順）", T.PREFECTURES_JIS, also_initials=True),
+        _list_scheme("都道府県（面積順）", T.PREFECTURES_AREA, also_initials=True),
     ]
 
 
