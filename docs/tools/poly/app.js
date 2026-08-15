@@ -166,24 +166,82 @@
     document.querySelectorAll(".cell.sel").forEach((x) => x.classList.remove("sel"));
     const btn = el.querySelector(`[data-r="${r}"][data-c="${c}"]`);
     if (btn) btn.classList.add("sel");
+    syncIme();
+  }
+
+  function hideIme() {
+    const ime = document.getElementById("cell-ime");
+    ime.style.display = "none";
+    ime.value = "";
+  }
+
+  function syncIme() {
+    const ime = document.getElementById("cell-ime");
+    if (!selected || selected.el !== boardEl) {
+      hideIme();
+      return;
+    }
+    const { r, c } = selected;
+    const btn = boardEl.querySelector(`[data-r="${r}"][data-c="${c}"]`);
+    if (!btn) {
+      hideIme();
+      return;
+    }
+    const rect = btn.getBoundingClientRect();
+    ime.style.display = "block";
+    ime.style.left = rect.left + "px";
+    ime.style.top = rect.top + "px";
+    ime.value = board[r][c].ch || "";
+    setTimeout(() => {
+      ime.focus();
+      ime.select();
+    }, 0);
+  }
+
+  function applyImeChar(raw) {
+    if (!selected || selected.el !== boardEl) return;
+    const { r, c } = selected;
+    const ch = [...(raw || "")].filter((x) => x.trim()).pop() || "";
+    board[r][c].on = true;
+    board[r][c].ch = ch;
+    const btn = boardEl.querySelector(`[data-r="${r}"][data-c="${c}"]`);
+    if (btn) {
+      btn.classList.add("on");
+      btn.textContent = ch;
+    }
+    const ime = document.getElementById("cell-ime");
+    ime.value = ch;
+    updateBoardStat();
   }
 
   function bindPaint(el, isBoard) {
     el.addEventListener("pointerdown", (e) => {
       const t = e.target.closest(".cell");
       if (!t) return;
-      e.preventDefault();
-      el.setPointerCapture(e.pointerId);
       const r = +t.dataset.r;
       const c = +t.dataset.c;
-      setSel(el, r, c);
+      const on = isBoard ? board[r][c].on : paint[r][c].on;
+      const already = selected && selected.el === el && selected.r === r && selected.c === c;
+      if (on && !already) {
+        painting = null;
+        setSel(el, r, c);
+        return;
+      }
+      e.preventDefault();
+      el.setPointerCapture(e.pointerId);
+      const nextOn = !on;
+      painting = nextOn;
       if (isBoard) {
-        painting = !board[r][c].on;
-        paintBoard(r, c, painting);
+        paintBoard(r, c, nextOn);
         updateBoardStat();
       } else {
-        painting = !paint[r][c].on;
-        paintPiece(r, c, painting);
+        paintPiece(r, c, nextOn);
+      }
+      if (nextOn) setSel(el, r, c);
+      else {
+        selected = null;
+        document.querySelectorAll(".cell.sel").forEach((x) => x.classList.remove("sel"));
+        hideIme();
       }
     });
     el.addEventListener("pointermove", (e) => {
@@ -208,7 +266,7 @@
   function updateBoardStat() {
     const n = cellsOfBoard().length;
     const letters = cellsOfBoard().filter(([r, c]) => board[r][c].ch).length;
-    boardStat.textContent = `サイズ ${size}　有効マス ${n}` + (letters ? `　文字 ${letters}` : "") + "　（マスを選んで文字キー）";
+    boardStat.textContent = `サイズ ${size}　有効マス ${n}` + (letters ? `　文字 ${letters}` : "") + "　（マスを選んでひらがな／文字を入力）";
     sizeLab.textContent = String(size);
   }
 
@@ -234,7 +292,7 @@
       b.type = "button";
       b.className = "mini";
       b.title = "クリックで削除";
-      b.innerHTML = miniSvg(p, COLORS[i % COLORS.length], 16);
+      b.innerHTML = `<small>${String.fromCharCode(65 + i)}</small>` + miniSvg(p, COLORS[i % COLORS.length], 16);
       b.addEventListener("click", () => {
         pieces.splice(i, 1);
         renderPieces();
@@ -557,7 +615,7 @@
         : `解 ${res.count} 件（${Math.round(res.ms)} ms）`;
       res.solutions.forEach((rowIds) => {
         const colorAt = Array(nCells).fill("");
-        const parts = [];
+        const byPiece = [];
         const allMapped = [];
         rowIds
           .map((ri) => rowMeta[ri])
@@ -566,12 +624,11 @@
             m.mapped.forEach((p) => {
               colorAt[p.id] = COLORS[m.pi % COLORS.length];
             });
-            const t = pickText(m.mapped);
-            if (t) parts.push(t);
+            byPiece[m.pi] = pickText(m.mapped);
             allMapped.push(...m.mapped);
           });
         const byNum = pickText(allMapped);
-        const byPiece = parts.join("");
+        const byAlpha = pieces.map((_, i) => byPiece[i] || "").join("");
         const maxR = Math.max(...cells.map((p) => p[0]));
         const maxC = Math.max(...cells.map((p) => p[1]));
         const s = 18;
@@ -585,13 +642,16 @@
         });
         const card = document.createElement("div");
         card.className = "sol-card";
-        const pickLine = byPiece || byNum;
-        const sub = byPiece && byNum && byPiece !== byNum ? `数字順 ${byNum}` : "";
-        card.innerHTML =
-          `<svg width="${(maxC + 1) * s}" height="${(maxR + 1) * s}">${body}</svg>` +
-          (pickLine
-            ? `<div class="sol-pick">${pickLine}${sub ? `<small>${sub}</small>` : ""}</div>`
-            : "");
+        let pickHtml = "";
+        if (byNum) {
+          pickHtml += `<div class="sol-pick">${byNum}<small>数字順</small></div>`;
+        }
+        if (byAlpha && byAlpha !== byNum) {
+          pickHtml += `<div class="sol-pick alpha">${byAlpha}<small>アルファベット順</small></div>`;
+        } else if (byAlpha && !byNum) {
+          pickHtml += `<div class="sol-pick">${byAlpha}<small>アルファベット順</small></div>`;
+        }
+        card.innerHTML = `<svg width="${(maxC + 1) * s}" height="${(maxR + 1) * s}">${body}</svg>` + pickHtml;
         solsEl.appendChild(card);
       });
     }, 20);
@@ -604,29 +664,30 @@
   fillRect(3, 4);
   loadSampleSmall();
 
+  const ime = document.getElementById("cell-ime");
+  ime.addEventListener("keydown", (e) => {
+    if (e.key === "Backspace" || e.key === "Delete") {
+      e.preventDefault();
+      applyImeChar("");
+    }
+  });
+  ime.addEventListener("input", (e) => {
+    if (e.isComposing) return;
+    applyImeChar(ime.value);
+  });
+  ime.addEventListener("compositionend", () => {
+    applyImeChar(ime.value);
+  });
+  window.addEventListener("resize", () => {
+    if (selected && selected.el === boardEl) syncIme();
+  });
+
   document.addEventListener("keydown", (e) => {
     if (!selected) return;
+    if (e.isComposing || e.key === "Process") return;
+    if (e.target === ime) return;
     if (e.target && (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA")) return;
     const { el, r, c } = selected;
-    if (el === boardEl) {
-      if (e.key === "Backspace" || e.key === "Delete") {
-        e.preventDefault();
-        board[r][c].ch = "";
-        renderGrid(boardEl, board, "board");
-        setSel(boardEl, r, c);
-        updateBoardStat();
-        return;
-      }
-      if (e.key.length === 1 && !e.ctrlKey && !e.metaKey) {
-        e.preventDefault();
-        board[r][c].on = true;
-        board[r][c].ch = e.key;
-        renderGrid(boardEl, board, "board");
-        setSel(boardEl, r, c);
-        updateBoardStat();
-      }
-      return;
-    }
     if (el === pieceEl) {
       if (e.key >= "1" && e.key <= "9") {
         e.preventDefault();

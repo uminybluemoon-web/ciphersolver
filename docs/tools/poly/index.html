@@ -23,6 +23,7 @@
           <button type="button" class="act" id="board-clear">盤をクリア</button>
         </div>
         <div class="grid-wrap board-theme" id="board-grid"></div>
+        <input id="cell-ime" class="cell-ime" maxlength="2" autocomplete="off" spellcheck="false" />
         <p class="hint" id="board-stat"></p>
       </section>
       <section>
@@ -32,7 +33,7 @@
           <button type="button" class="act" id="piece-add">ピースをソルバーに追加</button>
         </div>
         <div class="grid-wrap piece-theme" id="piece-grid"></div>
-        <p class="hint">形をクリックで描き、マスを選んで 1〜9 を入力（0 で数字だけ消す）。数字のあるマスが文字拾いの順です。最大 15 個。</p>
+        <p class="hint">クリックで形を描きます。オンのマスは1回目で選択（数字を入力）、同じマスの2回目で消えます。1〜9 が文字拾いの順です。最大 15 個。</p>
       </section>
     </div>
 
@@ -47,7 +48,7 @@
       <button type="button" class="act" id="solve">計算開始</button>
       <button type="button" class="act" id="stop" hidden>中止</button>
     </div>
-    <p class="hint">「一部のピースを使う」をオンにすると、全部は使わず盤面だけ埋めます。文字拾いはピース内の数字順、そのあとピース追加順につなぎます。</p>
+    <p class="hint">「一部のピースを使う」をオンにすると、全部は使わず盤面だけ埋めます。文字拾いは数字順を大きく出し、その下にアルファベット順（ピース A→B→C）を出します。</p>
 
     <h3>ピース一覧 <small>クリックで削除</small></h3>
     <div id="piece-list" class="piece-list"></div>

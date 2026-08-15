@@ -1,0 +1,57 @@
+h2 { font-size: 16px; margin: 12px 0 8px; }
+.layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+@media (max-width: 800px) {
+  .layout { grid-template-columns: 1fr; }
+}
+.grid-wrap {
+  display: grid;
+  width: max-content;
+  max-width: 100%;
+  gap: 2px;
+  user-select: none;
+  touch-action: none;
+}
+.cell {
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  background: #2a2722;
+  cursor: pointer;
+  padding: 0;
+  font: inherit;
+  font-size: 13px;
+  color: var(--ink);
+}
+.cell.on { background: #fffdf8; }
+.cell.sel { outline: 2px solid var(--accent); z-index: 1; }
+.cell-ime {
+  position: fixed;
+  width: 28px;
+  height: 28px;
+  margin: 0;
+  padding: 0;
+  border: 2px solid var(--accent);
+  border-radius: 3px;
+  text-align: center;
+  font: inherit;
+  font-size: 13px;
+  background: #fffdf8;
+  z-index: 20;
+  display: none;
+}
+#size-lab { min-width: 1.5em; text-align: center; }
+textarea { min-height: 220px; font-family: Consolas, "Yu Gothic UI", monospace; }
+.sols { display: flex; flex-wrap: wrap; gap: 12px; }
+.sol-card {
+  border: 1px solid var(--line);
+  background: var(--paper-2);
+  border-radius: 8px;
+  padding: 8px;
+}
+.sol-card svg { display: block; }
+.sol-words { color: var(--muted); font-size: 12px; margin-top: 6px; }

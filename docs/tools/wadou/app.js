@@ -8,6 +8,65 @@
   const nrowsEl = document.getElementById("nrows");
   const nconnWrap = document.getElementById("nconn-wrap");
   const modeHint = document.getElementById("mode-hint");
+  const kuniEl = document.getElementById("kuni");
+
+  const KUNI_IN = {
+    玉: "国", 王: "国",
+    十: "田",
+    口: "回",
+    大: "因",
+    木: "困",
+    人: "囚",
+    寸: "団",
+    井: "囲",
+    古: "固",
+    甫: "圃",
+    吾: "圄",
+    袁: "園",
+    員: "圓",
+    專: "團",
+    巻: "圏",
+    或: "國",
+    儿: "四",
+    八: "四",
+    乂: "図",
+    令: "囹",
+    豕: "圂",
+  };
+  const KUNI_REV = {};
+  Object.entries(KUNI_IN).forEach(([inner, out]) => {
+    if (!KUNI_REV[out]) KUNI_REV[out] = [];
+    if (!KUNI_REV[out].includes(inner)) KUNI_REV[out].push(inner);
+  });
+  const KUNI_OUT = new Set(Object.values(KUNI_IN));
+
+  function kuniOn() {
+    return kuniEl.checked;
+  }
+  function isCenter(id) {
+    return id.startsWith("C-");
+  }
+  function toLogic(id, ch) {
+    if (!ch) return ch;
+    if (!kuniOn() || !isCenter(id)) return ch;
+    return KUNI_IN[ch] || ch;
+  }
+  function toInner(ch) {
+    const ins = KUNI_REV[ch];
+    return ins ? ins[0] : ch;
+  }
+  function labelKuni(ch) {
+    const ins = KUNI_REV[ch];
+    if (!kuniOn() || !ins) return ch;
+    return ins.join("／") + "（" + ch + "）";
+  }
+  function kuniDomain() {
+    const s = new Set();
+    for (const out of KUNI_OUT) {
+      if (allKanji.has(out)) s.add(out);
+    }
+    return s.size ? s : new Set(KUNI_OUT);
+  }
 
   const toward = {};
   const inputs = {};
@@ -127,7 +186,7 @@
           edges.push({ eid: wEid, kind: "W", outer: ew(r, 0), center: ctr(r, c), on: useW });
         }
 
-        makeInput(ctr(r, c), cr, cc, "中", true);
+        makeInput(ctr(r, c), cr, cc, kuniOn() ? "玉" : "中", true);
 
         if (c === C - 1) {
           const eEid = `E-${r}-${c}`;
@@ -238,14 +297,16 @@
         "隣り合う中央は矢印だけでつなぎます（間のマスはありません）。空欄は未知、入っている字は確定です。";
     } else {
       modeHint.textContent =
-        "1個のときの連結 = 使う方向の数（2なら左右、3なら左右＋上、4なら四方向）。空欄は無視します。横・縦の個数を増やすと連結できます。";
+        "1個のときの連結 = 使う方向の数（2なら左右、3なら左右＋上、4なら四方向）。空欄は無視します。横・縦の個数を増やすと連結できます。中央の枠を国がまえにすると、玉→国、十→田のように中の字を囲みます。";
     }
+    coin.classList.toggle("kuni-on", kuniOn());
     buildGrid();
   }
   wlenEl.addEventListener("change", updateHint);
   nconnEl.addEventListener("input", updateHint);
   ncolsEl.addEventListener("input", updateHint);
   nrowsEl.addEventListener("input", updateHint);
+  kuniEl.addEventListener("change", updateHint);
   updateHint();
 
   function intersect(sets) {
@@ -334,7 +395,13 @@
     const dom = {};
     for (const id of involved) {
       const v = val(id);
-      dom[id] = v ? new Set([v]) : new Set(allKanji);
+      if (v) {
+        dom[id] = new Set([toLogic(id, v)]);
+      } else if (kuniOn() && isCenter(id)) {
+        dom[id] = new Set(kuniDomain());
+      } else {
+        dom[id] = new Set(allKanji);
+      }
     }
 
     let guard = 0;
@@ -428,8 +495,8 @@
     const parts = [];
     for (const e of edges) {
       if (!e.on) continue;
-      const o = assign[e.outer] || val(e.outer);
-      const c = assign[e.center] || val(e.center);
+      const o = assign[e.outer] != null ? assign[e.outer] : toLogic(e.outer, val(e.outer));
+      const c = assign[e.center] != null ? assign[e.center] : toLogic(e.center, val(e.center));
       if (!o || !c) continue;
       const w = toward[e.eid] ? o + c : c + o;
       parts.push(w + (dict2.has(w) ? "" : "？"));
@@ -438,14 +505,19 @@
   }
 
   function applyAssign(assign) {
-    for (const [id, ch] of Object.entries(assign)) setVal(id, ch);
+    for (const [id, ch] of Object.entries(assign)) {
+      setVal(id, kuniOn() && isCenter(id) ? toInner(ch) : ch);
+    }
   }
 
   function showLinked(res) {
     if (res.truncated) {
       const bits = res.unknowns.map((id) => {
         const arr = [...res.domains[id]].sort();
-        const show = arr.length > 30 ? arr.slice(0, 30).join(" ") + " …" : arr.join(" ");
+        const show = arr
+          .slice(0, 30)
+          .map((c) => (isCenter(id) ? labelKuni(c) : c))
+          .join(" ");
         return `<div><b>${cellLabel(id)}</b>（${arr.length}） ${show}</div>`;
       });
       out.innerHTML =
@@ -467,11 +539,11 @@
         .forEach((c) => {
           const b = document.createElement("button");
           b.type = "button";
-          b.textContent = c;
+          b.textContent = isCenter(id) ? labelKuni(c) : c;
           const as = { [id]: c };
           b.title = wordsForAssign(as);
           b.addEventListener("click", () => {
-            setVal(id, c);
+            applyAssign(as);
             document.getElementById("words").textContent = wordsForAssign(as);
           });
           box.appendChild(b);
@@ -502,7 +574,7 @@
       tr.style.cursor = "pointer";
       unknowns.forEach((id) => {
         const td = document.createElement("td");
-        td.textContent = s[id];
+        td.textContent = isCenter(id) ? labelKuni(s[id]) : s[id];
         tr.appendChild(td);
       });
       const td = document.createElement("td");
@@ -566,6 +638,10 @@
       if (r.err) {
         out.textContent = r.err;
         return;
+      }
+      if (kuniOn()) {
+        const allow = kuniDomain();
+        r.sols = r.sols.filter((c) => allow.has(c));
       }
       const id = "C-0-0";
       showLinked({

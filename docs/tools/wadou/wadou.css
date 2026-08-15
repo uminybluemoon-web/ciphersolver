@@ -20,6 +20,11 @@
   border: 2px dashed var(--line);
   background: #efe8d8;
 }
+.coin.kuni-on input.center {
+  border: 4px solid var(--ink);
+  border-radius: 4px;
+  background: #fffdf8;
+}
 .arrow {
   font: inherit;
   cursor: pointer;
