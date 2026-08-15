@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>和同開珎ソルバー</title>
+  <link rel="stylesheet" href="../../css/tool.css" />
+  <link rel="stylesheet" href="wadou.css" />
+</head>
+<body>
+  <div class="wrap">
+    <h1>和同開珎ソルバー</h1>
+    <p class="hint">上下左右の漢字を入れ、矢印をクリックして向きを反転します。中央に入る漢字を熟語辞書から探します。</p>
+    <div class="toolbar">
+      <label>熟語の長さ
+        <select id="wlen">
+          <option value="2" selected>2字（各方向が二字熟語）</option>
+          <option value="3">3字（縦・横が三字熟語）</option>
+        </select>
+      </label>
+      <label>連結の数
+        <input id="nconn" type="number" min="1" max="4" value="4" />
+      </label>
+      <button type="button" class="act" id="solve">解く</button>
+      <button type="button" class="act" id="clear">クリア</button>
+    </div>
+    <p class="hint" id="mode-hint"></p>
+    <div class="coin" id="coin"></div>
+    <div class="parsed" id="status">辞書を読み込み中…</div>
+    <div id="out"></div>
+    <p class="hint">熟語データは JMdict（EDRDG）の見出し漢字から二字・三字を抽出しています。辞書に無い熟語は出ません。</p>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>

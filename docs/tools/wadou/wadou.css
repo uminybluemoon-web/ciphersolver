@@ -1,0 +1,60 @@
+.coin {
+  display: grid;
+  grid-template-columns: 72px 56px 72px 56px 72px;
+  grid-template-rows: 64px 40px 64px 40px 64px;
+  justify-content: center;
+  align-items: center;
+  margin: 18px 0;
+  gap: 4px;
+}
+.coin input {
+  width: 72px;
+  height: 56px;
+  text-align: center;
+  font-size: 22px;
+}
+.center {
+  width: 72px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px dashed var(--line);
+  border-radius: 8px;
+  background: #efe8d8;
+  font-size: 22px;
+}
+.arrow {
+  font: inherit;
+  cursor: pointer;
+  border: 1px solid var(--line);
+  background: var(--paper-2);
+  border-radius: 8px;
+  height: 36px;
+}
+.arrow:hover { border-color: var(--accent); }
+.arm-off { opacity: 0.35; pointer-events: none; }
+.sol {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.sol button {
+  font: inherit;
+  font-size: 22px;
+  min-width: 48px;
+  padding: 8px;
+  cursor: pointer;
+  border: 1px solid var(--line);
+  background: var(--paper-2);
+  border-radius: 8px;
+}
+.sol button:hover { border-color: var(--accent); }
+.words { color: var(--muted); font-size: 13px; margin-top: 8px; }
+select, input[type="number"] {
+  font: inherit;
+  padding: 6px 8px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: var(--paper-2);
+}
