@@ -561,79 +561,12 @@
     }).join("");
   }
 
-  function freqTable(chars) {
-    const n = chars.length;
-    if (!n) return "";
-    const c = {};
-    for (const ch of chars) c[ch] = (c[ch] || 0) + 1;
-    return Object.entries(c)
-      .sort((a, b) => b[1] - a[1] || (a[0] < b[0] ? -1 : 1))
-      .map(([ch, k]) => `${ch} ${((100 * k) / n).toFixed(1)}%(${k})`)
-      .join("  ");
-  }
-
-  function indexOfCoincidence(letters) {
-    const n = letters.length;
-    if (n < 2) return null;
-    const c = {};
-    for (const ch of letters) c[ch] = (c[ch] || 0) + 1;
-    let s = 0;
-    for (const k of Object.values(c)) s += k * (k - 1);
-    return s / (n * (n - 1));
-  }
-
-  function keyLengthHints(letters) {
-    if (letters.length < 20) return "";
-    const scored = [];
-    for (let p = 1; p <= 12; p++) {
-      const cols = Array.from({ length: p }, () => []);
-      letters.forEach((ch, i) => cols[i % p].push(ch));
-      const ics = cols.map(indexOfCoincidence).filter((x) => x != null);
-      if (!ics.length) continue;
-      const avg = ics.reduce((a, b) => a + b, 0) / ics.length;
-      scored.push({ p, avg });
-    }
-    scored.sort((a, b) => b.avg - a.avg);
-    return scored
-      .slice(0, 5)
-      .map((x) => `${x.p}字(IC=${x.avg.toFixed(3)})`)
-      .join("  ");
-  }
-
-  const EN_ETAOIN = "ETAOINSHRDLCUMWFGYPBVKJXQZ";
-
   function convertAll(T, text, key) {
     const rows = [];
     const add = (group, name, value) => {
       if (value == null) return;
       rows.push({ group, name, text: value });
     };
-    const letters = [...text.toUpperCase()].filter((ch) => ch >= "A" && ch <= "Z");
-    const hira = [...text].filter((ch) => ch >= "ぁ" && ch <= "ん");
-    if (letters.length) {
-      add("解析", "英字数", String(letters.length));
-      add("解析", "英字頻度", freqTable(letters));
-      add(
-        "解析",
-        "英字順位",
-        [...letters.reduce((m, ch) => {
-          m.set(ch, (m.get(ch) || 0) + 1);
-          return m;
-        }, new Map()).entries()].sort((a, b) => b[1] - a[1]).map(([ch]) => ch).join("")
-      );
-      const ic = indexOfCoincidence(letters);
-      if (ic != null) {
-        add(
-          "解析",
-          "一致指数IC",
-          `${ic.toFixed(4)}  （英語本文≈0.067  乱文≈0.038  日本語ローマ字は低め）`
-        );
-      }
-      const hint = keyLengthHints(letters);
-      if (hint) add("解析", "ヴィジュネル鍵長の目安", hint + "  （ICが高い周期が鍵長の候補）");
-      add("解析", "英語のよく出る順", EN_ETAOIN + "  （上の英字順位と比べる）");
-    }
-    if (hira.length) add("解析", "ひらがな頻度", freqTable(hira));
 
     const vigKey = (key || "").trim();
     const vigEnc = vigenere(text, vigKey, false);

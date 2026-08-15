@@ -1,0 +1,51 @@
+.grid {
+  display: grid;
+  grid-template-columns: 1.3fr 0.9fr;
+  gap: 16px;
+  align-items: start;
+}
+@media (max-width: 800px) {
+  .grid { grid-template-columns: 1fr; }
+}
+.board {
+  background: var(--paper-2);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 12px;
+  min-height: 140px;
+  font-size: 20px;
+  line-height: 1.7;
+  letter-spacing: 0.04em;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.board .tok {
+  cursor: pointer;
+  border-radius: 3px;
+  padding: 0 1px;
+}
+.board .tok.mapped { color: var(--ink); font-weight: 700; }
+.board .tok.open { color: #9a9184; }
+.board .tok.sel { background: #f0d3c8; color: var(--ink); }
+.unused { font-family: Consolas, monospace; font-size: 16px; letter-spacing: 0.2em; }
+.map {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.pair {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 1px solid var(--line);
+  background: var(--paper-2);
+  border-radius: 6px;
+  padding: 4px 6px;
+  min-width: 36px;
+  cursor: pointer;
+}
+.pair.sel { border-color: var(--accent); background: #f0d3c8; }
+.pair .from { color: var(--muted); font-size: 12px; }
+.pair .to { font-weight: 700; min-height: 1.2em; }
+table tr.sel td { background: #f0d3c8; }
+table tr { cursor: pointer; }

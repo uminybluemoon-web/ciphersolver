@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>換え字解読</title>
+  <link rel="stylesheet" href="../../css/tool.css" />
+  <link rel="stylesheet" href="sub.css" />
+</head>
+<body>
+  <div class="wrap">
+    <h1>換え字解読</h1>
+    <p class="hint">暗号文の文字をクリックしてから、置きたい文字をキーボードで押します。同じ平文を二度使すと入れ替わります。</p>
+    <textarea id="cipher" placeholder="暗号文（例: WKH TXLFN EURZQ IRA）"></textarea>
+    <div class="toolbar">
+      <button type="button" class="act" id="reset">置き換えをリセット</button>
+      <button type="button" class="act" id="copy">結果をコピー</button>
+      <span class="hint" id="stats"></span>
+    </div>
+    <div class="grid">
+      <div>
+        <div class="parsed">置き換え結果（未確定は薄い字）</div>
+        <div class="board" id="board"></div>
+        <div class="parsed">未使用の平文</div>
+        <div id="unused" class="unused"></div>
+      </div>
+      <div>
+        <div class="parsed">頻度（行をクリックして選択）</div>
+        <div id="freq"></div>
+        <div class="parsed">対応表</div>
+        <div id="map" class="map"></div>
+      </div>
+    </div>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
