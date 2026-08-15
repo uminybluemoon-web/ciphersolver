@@ -32,7 +32,7 @@ h1 { font-size: 22px; margin: 0 0 8px; }
 }
 .inner-tab.is-active { background: var(--ink); color: var(--paper-2); border-color: var(--ink); }
 .row { display: flex; gap: 8px; align-items: center; }
-input[type="text"], textarea {
+input[type="text"], textarea, select {
   width: 100%;
   font: inherit;
   padding: 8px 10px;

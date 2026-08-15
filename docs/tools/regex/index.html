@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>正規表現検索</title>
+  <link rel="stylesheet" href="../../css/tool.css" />
+  <style>
+    .hits { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+    .hits span {
+      background: var(--paper-2);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 4px 8px;
+      font-family: Consolas, "Yu Gothic UI", monospace;
+    }
+    .err { color: #8b3d2f; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>正規表現検索</h1>
+    <p class="hint">日本語（漢字／読み）と英語の語彙を、正規表現で絞り込みます。例: <code>^..ん$</code>　<code>^c.t$</code>　<code>東京.</code></p>
+    <div class="toolbar">
+      <label>対象
+        <select id="src">
+          <option value="hira">日本語・読み（ひらがな）</option>
+          <option value="kanji">日本語・漢字</option>
+          <option value="en">英語</option>
+        </select>
+      </label>
+      <label class="chk"><input type="checkbox" id="full" checked /> 語全体にマッチ（^…$）</label>
+      <label class="chk"><input type="checkbox" id="icase" checked /> 大文字小文字を無視</label>
+    </div>
+    <div class="row">
+      <input id="pat" type="text" placeholder="正規表現" />
+      <button type="button" class="act" id="go">検索</button>
+    </div>
+    <p class="parsed" id="status">対象を選んで検索してください。初回はその辞書を読み込みます。</p>
+    <p class="err" id="err"></p>
+    <p class="hint">日本語は JMdict（EDRDG）、英語は公開英単語リストです。結果をクリックでコピー。</p>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>

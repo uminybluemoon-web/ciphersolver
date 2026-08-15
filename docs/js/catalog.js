@@ -3,5 +3,5 @@ window.SITE_TABS = [
   { id: "sub", title: "換え字解読", file: "tools/sub/index.html" },
   { id: "wadou", title: "和同開珎", file: "tools/wadou/index.html" },
   { id: "glyphs", title: "記号↔文字", file: "tools/glyphs/index.html" },
+  { id: "regex", title: "正規表現検索", file: "tools/regex/index.html" },
 ];
-
