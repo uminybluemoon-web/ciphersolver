@@ -35,20 +35,9 @@ python main.py
 
 ## Web（GitHub Pages）
 
-ブラウザ版は `docs/` です。上のタブは **ツールごと**、暗号解読の中のタブは **機能ごと** です。
+ブラウザ版は `docs/` です。公開 URL: https://uminybluemoon-web.github.io/ciphersolver/
 
-新しいツールを足す手順:
-
-1. `docs/tools/_template.html` をコピーして HTML を書く  
-2. `docs/js/catalog.js` に1行足す  
-
-```js
-{ id: "memo", title: "メモ", file: "tools/memo.html" },
-```
-
-GitHub でリポジトリを作り、Settings → Pages → Branch `main` / Folder `/docs` を選ぶと公開されます。あとは `git push` するたびに更新されます。
-
-この PC に Git が入っていない場合は、先に [Git for Windows](https://git-scm.com/download/win) を入れてください。
+`git push` すると GitHub Pages が更新されます。
 
 ## exe 化
 

@@ -139,6 +139,17 @@
       listScheme("星座JP（五十音順）", T.CONSTELLATION_JP_GOJUON, true),
       listScheme("惑星（日本語読み）", T.PLANETS_JP, true),
       listScheme("惑星（英語）", T.PLANETS_EN, true),
+      listScheme("春夏秋冬（日本語）", T.SEASONS_JP),
+      listScheme("春夏秋冬（英語）", T.SEASONS_EN, true),
+      listScheme("ドレミファソラシ", T.SOLFEGE, true),
+      listScheme("CDEFGAB", T.SOLFEGE_CDEFGAB),
+      listScheme("ドレミの歌", T.DOREMI_SONG, true),
+      listScheme("虹の色（日本語）", T.RAINBOW_JP, true),
+      listScheme("虹の色（英語）", T.RAINBOW_EN, true),
+      listScheme("曜日（日曜始まり・漢字）", T.WEEKDAYS_JP),
+      listScheme("曜日（日曜始まり・英語）", T.WEEKDAYS_EN, true),
+      listScheme("七つの大罪（読み）", T.DEADLY_SINS_JP, true),
+      listScheme("七つの大罪（英語）", T.DEADLY_SINS_EN, true),
     ];
   }
 

@@ -123,3 +123,33 @@ PLANETS_EN: list[str] = [
     "Mercury", "Venus", "Earth", "Mars", "Jupiter",
     "Saturn", "Uranus", "Neptune", "Pluto",
 ]
+
+# 春夏秋冬
+SEASONS_JP: list[str] = ["春", "夏", "秋", "冬"]
+SEASONS_EN: list[str] = ["Spring", "Summer", "Autumn", "Winter"]
+
+# 音名
+SOLFEGE: list[str] = ["ド", "レ", "ミ", "ファ", "ソ", "ラ", "シ"]
+SOLFEGE_CDEFGAB: list[str] = ["C", "D", "E", "F", "G", "A", "B"]
+# ドレミの歌（日本語詞の語呂）
+DOREMI_SONG: list[str] = [
+    "ドーナツ", "レモン", "みんな", "ファイト", "あおいそら", "ラッパ", "しあわせ",
+]
+
+# 虹（7色）
+RAINBOW_JP: list[str] = ["あか", "だいだい", "きいろ", "みどり", "あお", "あい", "むらさき"]
+RAINBOW_EN: list[str] = ["Red", "Orange", "Yellow", "Green", "Blue", "Indigo", "Violet"]
+
+# 曜日（日曜始まり）
+WEEKDAYS_JP: list[str] = ["日", "月", "火", "水", "木", "金", "土"]
+WEEKDAYS_EN: list[str] = [
+    "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday",
+]
+
+# 七つの大罪（傲慢・嫉妬・憤怒・怠惰・強欲・暴食・色欲）
+DEADLY_SINS_JP: list[str] = [
+    "ごうまん", "しっと", "ふんぬ", "たいだ", "ごうよく", "ぼうしょく", "しきよく",
+]
+DEADLY_SINS_EN: list[str] = [
+    "Pride", "Envy", "Wrath", "Sloth", "Greed", "Gluttony", "Lust",
+]

@@ -11,6 +11,11 @@
 
   function renderNav(active) {
     nav.innerHTML = "";
+    if (tabs.length < 2) {
+      nav.hidden = true;
+      return;
+    }
+    nav.hidden = false;
     tabs.forEach((t) => {
       const b = document.createElement("button");
       b.type = "button";

@@ -876,6 +876,99 @@ window.CIPHER_TABLES = {
     "Neptune",
     "Pluto"
   ],
+  "SEASONS_JP": [
+    "春",
+    "夏",
+    "秋",
+    "冬"
+  ],
+  "SEASONS_EN": [
+    "Spring",
+    "Summer",
+    "Autumn",
+    "Winter"
+  ],
+  "SOLFEGE": [
+    "ド",
+    "レ",
+    "ミ",
+    "ファ",
+    "ソ",
+    "ラ",
+    "シ"
+  ],
+  "SOLFEGE_CDEFGAB": [
+    "C",
+    "D",
+    "E",
+    "F",
+    "G",
+    "A",
+    "B"
+  ],
+  "DOREMI_SONG": [
+    "ドーナツ",
+    "レモン",
+    "みんな",
+    "ファイト",
+    "あおいそら",
+    "ラッパ",
+    "しあわせ"
+  ],
+  "RAINBOW_JP": [
+    "あか",
+    "だいだい",
+    "きいろ",
+    "みどり",
+    "あお",
+    "あい",
+    "むらさき"
+  ],
+  "RAINBOW_EN": [
+    "Red",
+    "Orange",
+    "Yellow",
+    "Green",
+    "Blue",
+    "Indigo",
+    "Violet"
+  ],
+  "WEEKDAYS_JP": [
+    "日",
+    "月",
+    "火",
+    "水",
+    "木",
+    "金",
+    "土"
+  ],
+  "WEEKDAYS_EN": [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday"
+  ],
+  "DEADLY_SINS_JP": [
+    "ごうまん",
+    "しっと",
+    "ふんぬ",
+    "たいだ",
+    "ごうよく",
+    "ぼうしょく",
+    "しきよく"
+  ],
+  "DEADLY_SINS_EN": [
+    "Pride",
+    "Envy",
+    "Wrath",
+    "Sloth",
+    "Greed",
+    "Gluttony",
+    "Lust"
+  ],
   "MORSE_AZ": {
     "A": ".-",
     "B": "-...",
