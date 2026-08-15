@@ -101,19 +101,22 @@ CipherReady.then((C) => {
       document.getElementById("conv-out").textContent = "文字列を入力してください";
       return;
     }
-    lastConv = C.convertAll(raw);
+    lastConv = C.convertAll(raw, document.getElementById("vig-key").value);
     renderConv();
   }
   function renderConv() {
     const showC = document.getElementById("conv-caesar").checked;
     const rows = lastConv.filter((r) => showC || r.group !== "シーザー").map((r) => [r.group, r.name, r.text]);
-    const tag = { 符号化: "enc", 符号: "sign", 暗号: "cip", シーザー: "cae" };
+    const tag = { 符号化: "enc", 符号: "sign", 暗号: "cip", 解析: "ana", シーザー: "cae" };
     document.getElementById("conv-out").replaceChildren(
       table(["分類", "変換", "結果"], rows, (cols) => tag[cols[0]] || "")
     );
   }
   document.getElementById("conv-go").addEventListener("click", runConv);
   document.getElementById("conv-caesar").addEventListener("change", () => { if (lastConv.length) renderConv(); });
+  document.getElementById("vig-key").addEventListener("keydown", (e) => {
+    if (e.key === "Enter") runConv();
+  });
   document.getElementById("conv-in").addEventListener("keydown", (e) => {
     if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) runConv();
   });

@@ -57,6 +57,7 @@ tr.code td:first-child { background: var(--code); }
 tr.enc td:first-child { background: var(--code); }
 tr.sign td:first-child { background: var(--ok); }
 tr.cip td:first-child { background: var(--warn); }
+tr.ana td:first-child { background: #eef6f2; }
 tr.cae td:first-child { background: var(--shift); }
 .mono { font-family: Consolas, "Cascadia Mono", monospace; white-space: pre-wrap; word-break: break-all; }
 .parsed { color: var(--muted); font-size: 12px; margin: 6px 0; }

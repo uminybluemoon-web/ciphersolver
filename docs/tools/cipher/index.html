@@ -37,8 +37,11 @@
     </section>
 
     <section class="panel" id="panel-conv">
-      <p class="hint">Base64 / URL / モールス / ROT / シーザー全シフト</p>
+      <p class="hint">Base64 / URL / モールス / ROT / ヴィジュネル / 頻度解析 / シーザー全シフト</p>
       <textarea id="conv-in" placeholder="Hello"></textarea>
+      <div class="row" style="margin-top:8px">
+        <input id="vig-key" type="text" placeholder="ヴィジュネル鍵（英字・例: LEMON）" />
+      </div>
       <div class="toolbar">
         <button type="button" class="act" id="conv-go">変換</button>
         <label class="chk"><input type="checkbox" id="conv-caesar" checked /> シーザー +1〜+25</label>
