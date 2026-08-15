@@ -10,7 +10,7 @@
 <body>
   <div class="wrap">
     <h1>ポリオミノソルバー</h1>
-    <p class="hint">盤面とピースをマス目で描き、はまり方を列挙します。盤のマスを選んで文字を入力、ピースのマスを選んで 1〜9 を付けると、解ごとに文字拾いができます。</p>
+    <p class="hint">盤面とピースをマス目で描き、はまり方を列挙します。盤のマスを選んで「マスの文字」にひらがななどを入力。ピースのマスを選んで 1〜9 を付けると、解ごとに文字拾いができます。</p>
 
     <div class="editors">
       <section>
@@ -21,9 +21,11 @@
           <button type="button" class="act" id="board-plus">増やす</button>
           <button type="button" class="act" id="board-fill">矩形で埋める</button>
           <button type="button" class="act" id="board-clear">盤をクリア</button>
+          <label class="cell-char-lab">マスの文字
+            <input id="cell-char" type="text" lang="ja" autocomplete="off" spellcheck="false" />
+          </label>
         </div>
         <div class="grid-wrap board-theme" id="board-grid"></div>
-        <input id="cell-ime" class="cell-ime" maxlength="2" autocomplete="off" spellcheck="false" />
         <p class="hint" id="board-stat"></p>
       </section>
       <section>

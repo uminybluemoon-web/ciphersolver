@@ -10,7 +10,7 @@
 <body>
   <div class="wrap">
     <h1>スケルトンソルバー</h1>
-    <p class="hint">白マスの形と単語リストを入れると、縦横の交差が合う埋め方を探します。白マスをクリックして文字を先に入れることもできます。</p>
+    <p class="hint">白マスの形と単語リストを入れると、縦横の交差が合う埋め方を探します。白マスを選んで「マスの文字」に先に入れることもできます。</p>
 
     <div class="layout">
       <section>
@@ -22,9 +22,11 @@
           <button type="button" class="act" id="fill">全部白</button>
           <button type="button" class="act" id="clear-board">全部黒</button>
           <button type="button" class="act" id="sample">サンプル</button>
+          <label class="cell-char-lab">マスの文字
+            <input id="cell-char" type="text" lang="ja" autocomplete="off" spellcheck="false" />
+          </label>
         </div>
         <div class="grid-wrap" id="grid"></div>
-        <input id="cell-ime" class="cell-ime" maxlength="2" autocomplete="off" spellcheck="false" />
         <p class="hint" id="board-stat"></p>
       </section>
       <section>

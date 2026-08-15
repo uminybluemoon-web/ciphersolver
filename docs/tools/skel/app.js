@@ -14,7 +14,7 @@
   };
 
   const gridEl = document.getElementById("grid");
-  const ime = document.getElementById("cell-ime");
+  const charInp = document.getElementById("cell-char");
   const wordsEl = document.getElementById("words");
   const status = document.getElementById("status");
   const solsEl = document.getElementById("sols");
@@ -27,6 +27,7 @@
   let selected = null;
   let painting = null;
   let abort = false;
+  let composing = false;
 
   function emptyGrid(n, on) {
     return Array.from({ length: n }, () =>
@@ -97,7 +98,7 @@
       }
     }
     updateStats();
-    syncIme();
+    syncCharInput(false);
   }
 
   function updateStats() {
@@ -126,41 +127,30 @@
     slotStat.textContent = words.length ? `単語 ${words.length}　${wtxt}` : "単語を1行ずつ入れてください";
   }
 
-  function hideIme() {
-    ime.style.display = "none";
-    ime.value = "";
+  function lastChar(raw) {
+    return [...(raw || "")].filter((x) => x.trim()).pop() || "";
   }
 
-  function syncIme() {
+  function syncCharInput(focus) {
     if (!selected || !grid[selected.r][selected.c].on) {
-      hideIme();
+      charInp.value = "";
+      charInp.disabled = true;
       return;
     }
-    const btn = gridEl.querySelector(`[data-r="${selected.r}"][data-c="${selected.c}"]`);
-    if (!btn) {
-      hideIme();
-      return;
-    }
-    const rect = btn.getBoundingClientRect();
-    ime.style.display = "block";
-    ime.style.left = rect.left + "px";
-    ime.style.top = rect.top + "px";
-    ime.value = grid[selected.r][selected.c].ch || "";
-    setTimeout(() => {
-      ime.focus();
-      ime.select();
-    }, 0);
+    charInp.disabled = false;
+    if (!composing) charInp.value = grid[selected.r][selected.c].ch || "";
+    if (focus) setTimeout(() => charInp.focus(), 0);
   }
 
-  function applyIme(raw) {
+  function applyChar(raw) {
     if (!selected) return;
     const { r, c } = selected;
     if (!grid[r][c].on) return;
-    const ch = [...(raw || "")].filter((x) => x.trim()).pop() || "";
+    const ch = lastChar(raw);
     grid[r][c].ch = ch;
     const btn = gridEl.querySelector(`[data-r="${r}"][data-c="${c}"]`);
     if (btn) btn.textContent = ch;
-    ime.value = ch;
+    if (!composing) charInp.value = ch;
   }
 
   function setSel(r, c) {
@@ -168,7 +158,7 @@
     document.querySelectorAll(".cell.sel").forEach((x) => x.classList.remove("sel"));
     const btn = gridEl.querySelector(`[data-r="${r}"][data-c="${c}"]`);
     if (btn) btn.classList.add("sel");
-    syncIme();
+    syncCharInput(true);
   }
 
   function paintCell(r, c, on) {
@@ -185,6 +175,7 @@
   gridEl.addEventListener("pointerdown", (e) => {
     const t = e.target.closest(".cell");
     if (!t) return;
+    e.preventDefault();
     const r = +t.dataset.r;
     const c = +t.dataset.c;
     const on = grid[r][c].on;
@@ -194,7 +185,6 @@
       setSel(r, c);
       return;
     }
-    e.preventDefault();
     gridEl.setPointerCapture(e.pointerId);
     const next = !on;
     painting = next;
@@ -203,7 +193,7 @@
     else {
       selected = null;
       document.querySelectorAll(".cell.sel").forEach((x) => x.classList.remove("sel"));
-      hideIme();
+      syncCharInput(false);
     }
     updateStats();
   });
@@ -222,19 +212,23 @@
     painting = null;
   });
 
-  ime.addEventListener("keydown", (e) => {
+  charInp.addEventListener("compositionstart", () => {
+    composing = true;
+  });
+  charInp.addEventListener("compositionend", () => {
+    composing = false;
+    applyChar(charInp.value);
+  });
+  charInp.addEventListener("input", (e) => {
+    if (composing || e.isComposing) return;
+    applyChar(charInp.value);
+  });
+  charInp.addEventListener("keydown", (e) => {
+    if (composing || e.isComposing) return;
     if (e.key === "Backspace" || e.key === "Delete") {
       e.preventDefault();
-      applyIme("");
+      applyChar("");
     }
-  });
-  ime.addEventListener("input", (e) => {
-    if (e.isComposing) return;
-    applyIme(ime.value);
-  });
-  ime.addEventListener("compositionend", () => applyIme(ime.value));
-  window.addEventListener("resize", () => {
-    if (selected) syncIme();
   });
   wordsEl.addEventListener("input", updateStats);
 

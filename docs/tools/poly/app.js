@@ -15,6 +15,7 @@
   const status = document.getElementById("status");
   const boardStat = document.getElementById("board-stat");
   const sizeLab = document.getElementById("board-size-lab");
+  const charInp = document.getElementById("cell-char");
 
   let size = 8;
   let board = [];
@@ -23,6 +24,7 @@
   let painting = null;
   let abort = false;
   let selected = null;
+  let composing = false;
 
   function emptyBoard(n, on) {
     return Array.from({ length: n }, () =>
@@ -161,47 +163,33 @@
     }
   }
 
+  function lastChar(raw) {
+    return [...(raw || "")].filter((x) => x.trim()).pop() || "";
+  }
+
   function setSel(el, r, c) {
     selected = { el, r, c };
     document.querySelectorAll(".cell.sel").forEach((x) => x.classList.remove("sel"));
     const btn = el.querySelector(`[data-r="${r}"][data-c="${c}"]`);
     if (btn) btn.classList.add("sel");
-    syncIme();
+    syncCharInput(true);
   }
 
-  function hideIme() {
-    const ime = document.getElementById("cell-ime");
-    ime.style.display = "none";
-    ime.value = "";
-  }
-
-  function syncIme() {
-    const ime = document.getElementById("cell-ime");
+  function syncCharInput(focus) {
     if (!selected || selected.el !== boardEl) {
-      hideIme();
+      charInp.value = "";
+      charInp.disabled = true;
       return;
     }
-    const { r, c } = selected;
-    const btn = boardEl.querySelector(`[data-r="${r}"][data-c="${c}"]`);
-    if (!btn) {
-      hideIme();
-      return;
-    }
-    const rect = btn.getBoundingClientRect();
-    ime.style.display = "block";
-    ime.style.left = rect.left + "px";
-    ime.style.top = rect.top + "px";
-    ime.value = board[r][c].ch || "";
-    setTimeout(() => {
-      ime.focus();
-      ime.select();
-    }, 0);
+    charInp.disabled = false;
+    if (!composing) charInp.value = board[selected.r][selected.c].ch || "";
+    if (focus) setTimeout(() => charInp.focus(), 0);
   }
 
-  function applyImeChar(raw) {
+  function applyChar(raw) {
     if (!selected || selected.el !== boardEl) return;
     const { r, c } = selected;
-    const ch = [...(raw || "")].filter((x) => x.trim()).pop() || "";
+    const ch = lastChar(raw);
     board[r][c].on = true;
     board[r][c].ch = ch;
     const btn = boardEl.querySelector(`[data-r="${r}"][data-c="${c}"]`);
@@ -209,8 +197,7 @@
       btn.classList.add("on");
       btn.textContent = ch;
     }
-    const ime = document.getElementById("cell-ime");
-    ime.value = ch;
+    if (!composing) charInp.value = ch;
     updateBoardStat();
   }
 
@@ -218,6 +205,7 @@
     el.addEventListener("pointerdown", (e) => {
       const t = e.target.closest(".cell");
       if (!t) return;
+      e.preventDefault();
       const r = +t.dataset.r;
       const c = +t.dataset.c;
       const on = isBoard ? board[r][c].on : paint[r][c].on;
@@ -227,7 +215,6 @@
         setSel(el, r, c);
         return;
       }
-      e.preventDefault();
       el.setPointerCapture(e.pointerId);
       const nextOn = !on;
       painting = nextOn;
@@ -241,7 +228,7 @@
       else {
         selected = null;
         document.querySelectorAll(".cell.sel").forEach((x) => x.classList.remove("sel"));
-        hideIme();
+        syncCharInput(false);
       }
     });
     el.addEventListener("pointermove", (e) => {
@@ -266,7 +253,7 @@
   function updateBoardStat() {
     const n = cellsOfBoard().length;
     const letters = cellsOfBoard().filter(([r, c]) => board[r][c].ch).length;
-    boardStat.textContent = `サイズ ${size}　有効マス ${n}` + (letters ? `　文字 ${letters}` : "") + "　（マスを選んでひらがな／文字を入力）";
+    boardStat.textContent = `サイズ ${size}　有効マス ${n}` + (letters ? `　文字 ${letters}` : "") + "　（マスを選んで右上の「マスの文字」に入力）";
     sizeLab.textContent = String(size);
   }
 
@@ -305,6 +292,7 @@
     renderGrid(boardEl, board, "board");
     renderGrid(pieceEl, paint, "piece");
     updateBoardStat();
+    syncCharInput(false);
   }
 
   function resizeBoard(n) {
@@ -664,28 +652,28 @@
   fillRect(3, 4);
   loadSampleSmall();
 
-  const ime = document.getElementById("cell-ime");
-  ime.addEventListener("keydown", (e) => {
+  charInp.addEventListener("compositionstart", () => {
+    composing = true;
+  });
+  charInp.addEventListener("compositionend", () => {
+    composing = false;
+    applyChar(charInp.value);
+  });
+  charInp.addEventListener("input", (e) => {
+    if (composing || e.isComposing) return;
+    applyChar(charInp.value);
+  });
+  charInp.addEventListener("keydown", (e) => {
+    if (composing || e.isComposing) return;
     if (e.key === "Backspace" || e.key === "Delete") {
       e.preventDefault();
-      applyImeChar("");
+      applyChar("");
     }
-  });
-  ime.addEventListener("input", (e) => {
-    if (e.isComposing) return;
-    applyImeChar(ime.value);
-  });
-  ime.addEventListener("compositionend", () => {
-    applyImeChar(ime.value);
-  });
-  window.addEventListener("resize", () => {
-    if (selected && selected.el === boardEl) syncIme();
   });
 
   document.addEventListener("keydown", (e) => {
     if (!selected) return;
-    if (e.isComposing || e.key === "Process") return;
-    if (e.target === ime) return;
+    if (e.isComposing || e.key === "Process" || composing) return;
     if (e.target && (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA")) return;
     const { el, r, c } = selected;
     if (el === pieceEl) {
@@ -718,6 +706,7 @@
     paint = emptyPaint(PIECE_EDIT);
     selected = null;
     renderGrid(pieceEl, paint, "piece");
+    syncCharInput(false);
   });
   document.getElementById("piece-add").addEventListener("click", () => {
     const cells = normalize(cellsOfPaint());
@@ -738,6 +727,7 @@
     selected = null;
     renderGrid(pieceEl, paint, "piece");
     renderPieces();
+    syncCharInput(false);
     status.textContent = `ピース ${pieces.length} 個`;
   });
   document.getElementById("sample").addEventListener("click", loadSampleSmall);

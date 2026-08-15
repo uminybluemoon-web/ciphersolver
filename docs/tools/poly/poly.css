@@ -7,20 +7,20 @@ h3 { font-size: 14px; margin: 14px 0 8px; }
   gap: 18px;
   position: relative;
 }
-.cell-ime {
-  position: fixed;
-  width: 28px;
-  height: 28px;
-  margin: 0;
-  padding: 0;
-  border: 2px solid var(--accent);
-  border-radius: 3px;
-  text-align: center;
-  font: inherit;
+.cell-char-lab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: 8px;
   font-size: 13px;
-  background: #e6c75a;
-  z-index: 20;
-  display: none;
+  color: var(--muted);
+}
+#cell-char {
+  width: 4.5em;
+  padding: 4px 8px;
+  font: inherit;
+  font-size: 16px;
+  text-align: center;
 }
 @media (max-width: 800px) {
   .editors { grid-template-columns: 1fr; }

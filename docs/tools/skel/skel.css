@@ -29,20 +29,20 @@ h2 { font-size: 16px; margin: 12px 0 8px; }
 }
 .cell.on { background: #fffdf8; }
 .cell.sel { outline: 2px solid var(--accent); z-index: 1; }
-.cell-ime {
-  position: fixed;
-  width: 28px;
-  height: 28px;
-  margin: 0;
-  padding: 0;
-  border: 2px solid var(--accent);
-  border-radius: 3px;
-  text-align: center;
-  font: inherit;
+.cell-char-lab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: 8px;
   font-size: 13px;
-  background: #fffdf8;
-  z-index: 20;
-  display: none;
+  color: var(--muted);
+}
+#cell-char {
+  width: 4.5em;
+  padding: 4px 8px;
+  font: inherit;
+  font-size: 16px;
+  text-align: center;
 }
 #size-lab { min-width: 1.5em; text-align: center; }
 textarea { min-height: 220px; font-family: Consolas, "Yu Gothic UI", monospace; }
