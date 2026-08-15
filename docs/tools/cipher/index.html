@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>暗号解読オールインワン</title>
+  <link rel="stylesheet" href="../../css/tool.css" />
+</head>
+<body>
+  <div class="wrap">
+    <h1>暗号解読オールインワン</h1>
+    <p class="hint">番号・文字を入れて、読み方を一斉に出します。行をクリックするとコピーします。</p>
+    <div class="inner-tabs" id="inner-tabs">
+      <button type="button" class="inner-tab is-active" data-panel="fwd">解読（番号）</button>
+      <button type="button" class="inner-tab" data-panel="rev">逆引き</button>
+      <button type="button" class="inner-tab" data-panel="conv">変換（文字）</button>
+    </div>
+
+    <section class="panel is-on" id="panel-fwd">
+      <p class="hint">例: 10 16 4 ／ 68 82 69 65 77 ／ 4D ／ 77 2 2 ／ 1-2</p>
+      <div class="row">
+        <input id="fwd-in" type="text" placeholder="10 16 4" />
+        <button type="button" class="act" id="fwd-go">解読</button>
+      </div>
+      <label class="chk"><input type="checkbox" id="fwd-detail" checked /> 内訳を表示</label>
+      <div class="parsed" id="fwd-parsed"></div>
+      <div id="fwd-out"></div>
+    </section>
+
+    <section class="panel" id="panel-rev">
+      <p class="hint">例: dream ／ ねたと ／ みかか ／ ねずみ たつ</p>
+      <div class="row">
+        <input id="rev-in" type="text" placeholder="dream" />
+        <button type="button" class="act" id="rev-go">逆引き</button>
+      </div>
+      <div id="rev-out"></div>
+    </section>
+
+    <section class="panel" id="panel-conv">
+      <p class="hint">Base64 / URL / モールス / ROT / シーザー全シフト</p>
+      <textarea id="conv-in" placeholder="Hello"></textarea>
+      <div class="toolbar">
+        <button type="button" class="act" id="conv-go">変換</button>
+        <label class="chk"><input type="checkbox" id="conv-caesar" checked /> シーザー +1〜+25</label>
+      </div>
+      <div id="conv-out"></div>
+    </section>
+  </div>
+  <script src="tables.js"></script>
+  <script src="engine.js"></script>
+  <script src="ui.js"></script>
+</body>
+</html>

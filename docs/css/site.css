@@ -1,0 +1,81 @@
+:root {
+  --ink: #1c1914;
+  --muted: #6b6459;
+  --paper: #f6f1e6;
+  --paper-2: #fffdf8;
+  --line: #d9d0c0;
+  --accent: #8b3d2f;
+  --accent-2: #2f4a3c;
+  --tab: #efe8d8;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: "Yu Gothic UI", "Hiragino Sans", sans-serif;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+}
+
+.site-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 10px 16px 0;
+  border-bottom: 1px solid var(--line);
+  background: var(--paper-2);
+}
+
+.site-brand {
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.site-brand small {
+  display: block;
+  font-weight: 400;
+  color: var(--muted);
+  font-size: 11px;
+  letter-spacing: 0;
+}
+
+#site-tabs {
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  flex: 1;
+}
+
+.site-tab {
+  border: 1px solid transparent;
+  border-bottom: none;
+  background: transparent;
+  color: var(--muted);
+  padding: 10px 14px;
+  cursor: pointer;
+  border-radius: 8px 8px 0 0;
+  font: inherit;
+}
+
+.site-tab.is-active {
+  background: var(--paper);
+  color: var(--ink);
+  border-color: var(--line);
+  position: relative;
+  top: 1px;
+}
+
+#tool-frame {
+  flex: 1;
+  width: 100%;
+  border: 0;
+  background: var(--paper);
+}

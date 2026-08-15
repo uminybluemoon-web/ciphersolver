@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>タブの足し方</title>
+  <link rel="stylesheet" href="../css/tool.css" />
+</head>
+<body>
+  <div class="wrap">
+    <h1>タブの足し方</h1>
+    <p class="hint">今回の暗号解読に限らず、同じページにツールを増やせます。GitHub に push すると公開サイトも更新されます。</p>
+
+    <h2>1. ページを作る</h2>
+    <p><code>docs/tools/_template.html</code> をコピーして、例えば <code>docs/tools/memo.html</code> を作ります。</p>
+
+    <h2>2. カタログに1行足す</h2>
+    <p>編集するのは <code>docs/js/catalog.js</code> だけです。</p>
+    <pre>window.SITE_TABS = [
+  { id: "cipher", title: "暗号解読", file: "tools/cipher/index.html" },
+  { id: "memo", title: "メモ", file: "tools/memo.html" },
+  { id: "about", title: "タブの足し方", file: "tools/about.html" },
+];</pre>
+    <ul>
+      <li><code>id</code> … URL の <code>#memo</code> になります（英数字）</li>
+      <li><code>title</code> … 上のタブに出る名前</li>
+      <li><code>file</code> … HTML の場所（<code>docs/</code> からの相対パス）</li>
+    </ul>
+
+    <h2>3. 公開を更新する</h2>
+    <pre>git add docs
+git commit -m "メモタブを追加"
+git push</pre>
+    <p>GitHub の Settings → Pages で <code>main</code> の <code>/docs</code> を公開先にします。</p>
+  </div>
+</body>
+</html>
