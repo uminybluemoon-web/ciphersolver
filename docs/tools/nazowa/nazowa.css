@@ -11,4 +11,65 @@ h2 { font-size: 16px; margin: 8px 0; }
   margin: 4px 0;
 }
 .chunks li:hover { color: var(--accent); }
-select { width: auto; }
+#panel-btns .btns-card {
+  border: 1px solid var(--line);
+  background: var(--paper-2);
+  border-radius: 8px;
+  padding: 12px;
+  margin: 10px 0;
+}
+#panel-btns h3 {
+  margin: 0 0 8px;
+  font-size: 13px;
+  color: var(--muted);
+  font-weight: 600;
+}
+.status-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+}
+.remaining {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 800;
+}
+.sequence { margin: 0; white-space: pre-line; font-size: 15px; }
+.recommend-panel { text-align: center; }
+.recommend-color {
+  margin: 8px 0 4px;
+  font-size: 42px;
+  font-weight: 800;
+  line-height: 1.1;
+}
+.recommend-number { margin: 0 0 12px; color: var(--muted); }
+.warn { color: #8b3d2f; }
+.color-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.color-btn {
+  appearance: none;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  min-height: 52px;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+.color-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+.color-btn.selected { outline: 2px solid var(--ink); outline-offset: 2px; }
+.color-btn[data-color="赤"] { background: #d32f2f; color: #fff; }
+.color-btn[data-color="黄"] { background: #f9c80e; color: #111; }
+.color-btn[data-color="青"] { background: #1e88e5; color: #fff; }
+.color-btn[data-color="緑"] { background: #43a047; color: #fff; }
+.history { margin: 0; padding-left: 1.2em; }
+.color-red { color: #c44536; }
+.color-yellow { color: #b8860b; }
+.color-blue { color: #1e5a8a; }
+.color-green { color: #2f6f4e; }
+#confirmBtn { width: 100%; margin-top: 8px; }
+@media (max-width: 480px) {
+  .status-grid { grid-template-columns: 1fr; }
+}

@@ -13,6 +13,7 @@
     <p class="hint">謎解きワールド向けの、問題専用ソルバーです。上の切替で問題を選びます。</p>
     <div class="inner-tabs" id="inner-tabs">
       <button type="button" class="inner-tab is-active" data-panel="pic">A picture in</button>
+      <button type="button" class="inner-tab" data-panel="btns">4buttons</button>
     </div>
 
     <section class="panel is-on" id="panel-pic">
@@ -35,6 +36,52 @@
       <pre class="mono" id="pic-cf"></pre>
       <pre class="mono" id="pic-val"></pre>
       <ol id="pic-chunks" class="chunks"></ol>
+    </section>
+
+    <section class="panel" id="panel-btns">
+      <h2>4buttons</h2>
+      <p class="hint" id="phaseHint">Step 1を入力してください</p>
+      <div class="btns-card">
+        <div class="status-grid">
+          <div>
+            <h3>色対応</h3>
+            <p id="mappingText" class="mono">未設定</p>
+          </div>
+          <div>
+            <h3>初期値</h3>
+            <p id="initialText" class="mono">—</p>
+          </div>
+          <div>
+            <h3>現在残数</h3>
+            <p id="remainingText" class="remaining">—</p>
+          </div>
+        </div>
+      </div>
+      <div class="btns-card">
+        <h3 id="sequenceTitle">Step 1</h3>
+        <p id="sequenceText" class="sequence">（未入力）</p>
+      </div>
+      <div class="btns-card recommend-panel" id="recommendPanel" hidden>
+        <h3>次に押す色</h3>
+        <div id="recommendBody"></div>
+        <button type="button" class="act" id="confirmBtn" hidden>この色を押した</button>
+      </div>
+      <div class="btns-card" id="wallPanel" hidden>
+        <h3>壁から返ってきた色</h3>
+        <p class="hint">壁が表示した色をタップしてください</p>
+      </div>
+      <div class="btns-card">
+        <h3 id="colorButtonsTitle">色を選択</h3>
+        <div class="color-grid" id="colorButtons"></div>
+      </div>
+      <div class="btns-card">
+        <h3>履歴</h3>
+        <ol id="historyList" class="history"></ol>
+      </div>
+      <div class="toolbar">
+        <button type="button" class="act" id="undoBtn">1手戻す</button>
+        <button type="button" class="act" id="resetBtn">最初から</button>
+      </div>
     </section>
   </div>
   <script src="app.js"></script>
