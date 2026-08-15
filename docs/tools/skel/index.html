@@ -10,7 +10,7 @@
 <body>
   <div class="wrap">
     <h1>スケルトンソルバー</h1>
-    <p class="hint">白マスの形と単語リストを入れると、縦横の交差が合う埋め方を探します。白マスを選んで「マスの文字」に先に入れることもできます。</p>
+    <p class="hint">白マスの形と単語リストを入れると、縦横の交差が合う埋め方を探します。クリックで白黒を切り替え。Shift+クリックでマスを選んで文字や番号を入れます。番号は解の文字拾い順です。</p>
 
     <div class="layout">
       <section>
@@ -24,6 +24,9 @@
           <button type="button" class="act" id="sample">サンプル</button>
           <label class="cell-char-lab">マスの文字
             <input id="cell-char" type="text" lang="ja" autocomplete="off" spellcheck="false" />
+          </label>
+          <label class="cell-char-lab">番号
+            <input id="cell-num" type="text" inputmode="numeric" autocomplete="off" />
           </label>
         </div>
         <div class="grid-wrap" id="grid"></div>
@@ -44,7 +47,7 @@
       <button type="button" class="act" id="solve">計算開始</button>
       <button type="button" class="act" id="stop" hidden>中止</button>
     </div>
-    <p class="parsed" id="status">盤の白マスがスロット（2マス以上の連続）になります。</p>
+    <p class="parsed" id="status">クリックで白黒を切り替えます。白マスがスロット（2マス以上の連続）になります。</p>
     <h2>答え</h2>
     <div id="sols" class="sols"></div>
   </div>

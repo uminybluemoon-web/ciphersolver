@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>アナグラムソルバー</title>
+  <link rel="stylesheet" href="../../css/tool.css" />
+  <link rel="stylesheet" href="ana.css" />
+</head>
+<body>
+  <div class="wrap">
+    <h1>アナグラムソルバー</h1>
+    <p class="hint">与えた文字を並べ替えて、辞書に載る語を探します。正規表現タブと同じ語彙です（日本語は JMdict、英語は公開英単語リスト）。</p>
+
+    <div class="toolbar">
+      <label>対象
+        <select id="src">
+          <option value="hira">日本語・読み（ひらがな）</option>
+          <option value="kanji">日本語・漢字</option>
+          <option value="en">英語</option>
+        </select>
+      </label>
+      <label class="chk"><input type="checkbox" id="daku" /> 濁点・半濁点を無視</label>
+      <label class="chk"><input type="checkbox" id="icase" checked /> 大文字小文字を無視</label>
+    </div>
+    <div class="row">
+      <input id="letters" type="text" lang="ja" placeholder="並べ替える文字（ひらがな／漢字／英字）" />
+    </div>
+    <div class="toolbar">
+      <label>最低文字数
+        <select id="minlen">
+          <option value="1">1</option>
+          <option value="2" selected>2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+        </select>
+      </label>
+      <label>最大件数
+        <input id="limit" type="number" min="10" max="5000" value="1000" />
+      </label>
+    </div>
+    <div class="toolbar">
+      <button type="button" class="act" id="one">1つの単語</button>
+      <button type="button" class="act" id="multi">複数の単語</button>
+      <button type="button" class="act" id="sub">含まれる単語</button>
+      <button type="button" class="act" id="stop" hidden>中止</button>
+    </div>
+    <p class="hint">「1つの単語」は文字をすべて使う語。「複数の単語」は余りなく分割。「含まれる単語」は一部の文字だけで作れる語です。複数語は文字数が多いと時間がかかります。</p>
+    <p class="parsed" id="status">文字を入れてボタンを押してください。初回はその辞書を読み込みます。</p>
+    <p class="err" id="err"></p>
+    <p class="norm" id="norm"></p>
+    <div class="hits" id="hits"></div>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>

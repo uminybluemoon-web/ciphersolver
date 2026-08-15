@@ -15,6 +15,7 @@
 
   const gridEl = document.getElementById("grid");
   const charInp = document.getElementById("cell-char");
+  const numInp = document.getElementById("cell-num");
   const wordsEl = document.getElementById("words");
   const status = document.getElementById("status");
   const solsEl = document.getElementById("sols");
@@ -31,7 +32,7 @@
 
   function emptyGrid(n, on) {
     return Array.from({ length: n }, () =>
-      Array.from({ length: n }, () => ({ on: !!on, ch: "" }))
+        Array.from({ length: n }, () => ({ on: !!on, ch: "", n: 0 }))
     );
   }
 
@@ -93,7 +94,7 @@
         if (selected && selected.r === r && selected.c === c) b.classList.add("sel");
         b.dataset.r = String(r);
         b.dataset.c = String(c);
-        b.textContent = grid[r][c].on ? grid[r][c].ch : "";
+        fillCell(b, grid[r][c]);
         gridEl.appendChild(b);
       }
     }
@@ -114,7 +115,7 @@
       .map((k) => `${k}文字×${lens[k]}`)
       .join("　");
     sizeLab.textContent = String(size);
-    boardStat.textContent = `サイズ ${size}　白マス ${white}　スロット ${slots.length}` + (slotTxt ? `（${slotTxt}）` : "");
+    boardStat.textContent = `サイズ ${size}　白マス ${white}　スロット ${slots.length}` + (slotTxt ? `（${slotTxt}）` : "") + "　（クリックで白黒）";
     const words = parseWords();
     const wlen = {};
     words.forEach((w) => {
@@ -127,6 +128,19 @@
     slotStat.textContent = words.length ? `単語 ${words.length}　${wtxt}` : "単語を1行ずつ入れてください";
   }
 
+  function fillCell(btn, cell) {
+    btn.replaceChildren();
+    if (!cell.on) return;
+    if (cell.ch) btn.append(cell.ch);
+    else if (cell.n) btn.append(String(cell.n));
+    if (cell.n && cell.ch) {
+      const sm = document.createElement("small");
+      sm.className = "pick-n";
+      sm.textContent = String(cell.n);
+      btn.appendChild(sm);
+    }
+  }
+
   function lastChar(raw) {
     return [...(raw || "")].filter((x) => x.trim()).pop() || "";
   }
@@ -134,23 +148,51 @@
   function syncCharInput(focus) {
     if (!selected || !grid[selected.r][selected.c].on) {
       charInp.value = "";
+      numInp.value = "";
       charInp.disabled = true;
+      numInp.disabled = true;
       return;
     }
     charInp.disabled = false;
-    if (!composing) charInp.value = grid[selected.r][selected.c].ch || "";
+    numInp.disabled = false;
+    const cell = grid[selected.r][selected.c];
+    if (!composing) charInp.value = cell.ch || "";
+    numInp.value = cell.n ? String(cell.n) : "";
     if (focus) setTimeout(() => charInp.focus(), 0);
+  }
+
+  function refreshSelectedCell() {
+    if (!selected) return;
+    const { r, c } = selected;
+    const btn = gridEl.querySelector(`[data-r="${r}"][data-c="${c}"]`);
+    if (btn) fillCell(btn, grid[r][c]);
   }
 
   function applyChar(raw) {
     if (!selected) return;
     const { r, c } = selected;
     if (!grid[r][c].on) return;
-    const ch = lastChar(raw);
-    grid[r][c].ch = ch;
-    const btn = gridEl.querySelector(`[data-r="${r}"][data-c="${c}"]`);
-    if (btn) btn.textContent = ch;
-    if (!composing) charInp.value = ch;
+    const t = (raw || "").trim();
+    if (!t) {
+      grid[r][c].ch = "";
+    } else if (/^\d+$/.test(t)) {
+      grid[r][c].n = Math.max(0, Math.min(99, +t));
+      numInp.value = grid[r][c].n ? String(grid[r][c].n) : "";
+    } else {
+      grid[r][c].ch = lastChar(t);
+    }
+    refreshSelectedCell();
+    if (!composing) charInp.value = grid[r][c].ch || "";
+  }
+
+  function applyNum(raw) {
+    if (!selected) return;
+    const { r, c } = selected;
+    if (!grid[r][c].on) return;
+    const t = (raw || "").trim();
+    grid[r][c].n = /^\d+$/.test(t) ? Math.max(0, Math.min(99, +t)) : 0;
+    numInp.value = grid[r][c].n ? String(grid[r][c].n) : "";
+    refreshSelectedCell();
   }
 
   function setSel(r, c) {
@@ -164,11 +206,14 @@
   function paintCell(r, c, on) {
     if (r < 0 || c < 0 || r >= size || c >= size) return;
     grid[r][c].on = on;
-    if (!on) grid[r][c].ch = "";
+    if (!on) {
+      grid[r][c].ch = "";
+      grid[r][c].n = 0;
+    }
     const btn = gridEl.querySelector(`[data-r="${r}"][data-c="${c}"]`);
     if (btn) {
       btn.classList.toggle("on", on);
-      btn.textContent = on ? grid[r][c].ch : "";
+      fillCell(btn, grid[r][c]);
     }
   }
 
@@ -178,19 +223,17 @@
     e.preventDefault();
     const r = +t.dataset.r;
     const c = +t.dataset.c;
-    const on = grid[r][c].on;
-    const already = selected && selected.r === r && selected.c === c;
-    if (on && !already) {
+    if (e.shiftKey) {
       painting = null;
-      setSel(r, c);
+      if (grid[r][c].on) setSel(r, c);
       return;
     }
     gridEl.setPointerCapture(e.pointerId);
-    const next = !on;
+    const next = !grid[r][c].on;
     painting = next;
     paintCell(r, c, next);
     if (next) setSel(r, c);
-    else {
+    else if (selected && selected.r === r && selected.c === c) {
       selected = null;
       document.querySelectorAll(".cell.sel").forEach((x) => x.classList.remove("sel"));
       syncCharInput(false);
@@ -202,7 +245,14 @@
     const t = document.elementFromPoint(e.clientX, e.clientY);
     const cell = t && t.closest ? t.closest(".cell") : null;
     if (!cell || !gridEl.contains(cell)) return;
-    paintCell(+cell.dataset.r, +cell.dataset.c, painting);
+    const r = +cell.dataset.r;
+    const c = +cell.dataset.c;
+    paintCell(r, c, painting);
+    if (!painting && selected && selected.r === r && selected.c === c) {
+      selected = null;
+      document.querySelectorAll(".cell.sel").forEach((x) => x.classList.remove("sel"));
+      syncCharInput(false);
+    }
     updateStats();
   });
   gridEl.addEventListener("pointerup", () => {
@@ -230,6 +280,28 @@
       applyChar("");
     }
   });
+  numInp.addEventListener("input", () => applyNum(numInp.value));
+  numInp.addEventListener("keydown", (e) => {
+    if (e.key === "Backspace" || e.key === "Delete") {
+      if (!numInp.value) {
+        e.preventDefault();
+        applyNum("");
+      }
+    }
+  });
+  document.addEventListener("keydown", (e) => {
+    if (!selected) return;
+    if (composing || e.isComposing || e.key === "Process") return;
+    if (e.target && (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA")) return;
+    if (e.key >= "1" && e.key <= "9") {
+      e.preventDefault();
+      applyNum(e.key);
+    }
+    if (e.key === "0" || e.key === "Backspace" || e.key === "Delete") {
+      e.preventDefault();
+      applyNum("");
+    }
+  });
   wordsEl.addEventListener("input", updateStats);
 
   function resize(n) {
@@ -255,6 +327,9 @@
       [0, 0, 0, 0, 0],
     ];
     for (let r = 0; r < 3; r++) for (let c = 0; c < 3; c++) grid[r][c].on = !!on[r][c];
+    grid[0][0].n = 1;
+    grid[0][1].n = 2;
+    grid[0][2].n = 3;
     wordsEl.value = ["あさひ", "あおい", "ひかり", "いかり"].join("\n");
     selected = null;
     renderGrid();
@@ -352,6 +427,23 @@
     };
   }
 
+  function pickText(letters) {
+    const tagged = [];
+    for (let r = 0; r < size; r++) {
+      for (let c = 0; c < size; c++) {
+        if (!grid[r][c].on || !grid[r][c].n) continue;
+        tagged.push({
+          n: grid[r][c].n,
+          r,
+          c,
+          ch: letters[r + "," + c] || grid[r][c].ch || "・",
+        });
+      }
+    }
+    tagged.sort((a, b) => a.n - b.n || a.r - b.r || a.c - b.c);
+    return tagged.map((p) => p.ch).join("");
+  }
+
   function drawSol(letters) {
     const s = 22;
     let body = "";
@@ -419,7 +511,9 @@
           const p0 = sl.cells[0];
           return `${sl.dir}(${p0.r + 1},${p0.c + 1}) ${words[wi]}`;
         });
-        card.innerHTML = drawSol(sol.letters) + `<div class="sol-words">${lines.join("　")}</div>`;
+        const pick = pickText(sol.letters);
+        const pickHtml = pick ? `<div class="sol-pick">${pick}<small>数字順</small></div>` : "";
+        card.innerHTML = drawSol(sol.letters) + pickHtml + `<div class="sol-words">${lines.join("　")}</div>`;
         solsEl.appendChild(card);
       });
     }, 20);

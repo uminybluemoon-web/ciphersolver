@@ -26,7 +26,19 @@ h2 { font-size: 16px; margin: 12px 0 8px; }
   font: inherit;
   font-size: 13px;
   color: var(--ink);
+  position: relative;
 }
+.cell.on { background: #fffdf8; }
+.cell.sel { outline: 2px solid var(--accent); z-index: 1; }
+.cell .pick-n {
+  position: absolute;
+  top: 0;
+  left: 1px;
+  font-size: 9px;
+  line-height: 1;
+  color: var(--accent);
+}
+#cell-num { width: 3.2em; }
 .cell.on { background: #fffdf8; }
 .cell.sel { outline: 2px solid var(--accent); z-index: 1; }
 .cell-char-lab {
@@ -54,4 +66,16 @@ textarea { min-height: 220px; font-family: Consolas, "Yu Gothic UI", monospace; 
   padding: 8px;
 }
 .sol-card svg { display: block; }
-.sol-words { color: var(--muted); font-size: 12px; margin-top: 6px; }
+.sol-pick {
+  margin-top: 6px;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+.sol-pick small {
+  display: block;
+  font-weight: 400;
+  color: var(--muted);
+  font-size: 12px;
+  letter-spacing: 0;
+}

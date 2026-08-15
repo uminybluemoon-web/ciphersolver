@@ -1,0 +1,14 @@
+.hits { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.hits span {
+  background: var(--paper-2);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-family: Consolas, "Yu Gothic UI", monospace;
+  cursor: pointer;
+}
+.hits span.phrase { font-weight: 600; }
+.err { color: #8b3d2f; }
+.norm { color: var(--muted); font-size: 13px; min-height: 1.2em; }
+#limit { width: 5.5em; }
+select { width: auto; }
