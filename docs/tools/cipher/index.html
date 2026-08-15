@@ -37,8 +37,11 @@
     </section>
 
     <section class="panel" id="panel-conv">
-      <p class="hint">Base64 / URL / モールス / ROT / ヴィジュネル / シーザー全シフト</p>
-      <textarea id="conv-in" placeholder="Hello"></textarea>
+      <p class="hint">Base64 / URL / モールス / ROT / ヴィジュネル / シーザー全シフト / 文字拾い</p>
+      <textarea id="conv-in" placeholder="本文（例: このぶんしょうのこたえは）"></textarea>
+      <div class="row" style="margin-top:8px">
+        <input id="pick-idx" type="text" lang="ja" placeholder="文字拾い（n番目・例: 10 9 → たこ）" />
+      </div>
       <div class="row" style="margin-top:8px">
         <input id="vig-key" type="text" placeholder="ヴィジュネル鍵（英字・例: LEMON）" />
       </div>

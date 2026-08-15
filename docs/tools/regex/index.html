@@ -16,12 +16,30 @@
       cursor: pointer;
     }
     .err { color: #8b3d2f; }
+    .make {
+      border: 1px solid var(--line);
+      background: var(--paper-2);
+      border-radius: 8px;
+      padding: 10px 12px;
+      margin: 10px 0 14px;
+    }
+    .make h2 { font-size: 14px; margin: 0 0 8px; }
+    .make textarea { min-height: 88px; margin: 6px 0; }
+    .make .row { margin: 6px 0; }
+    .out {
+      font-family: Consolas, "Yu Gothic UI", monospace;
+      background: #efe8d8;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+    #pos { max-width: 16em; }
+
   </style>
 </head>
 <body>
   <div class="wrap">
     <h1>正規表現検索</h1>
-    <p class="hint">日本語（漢字／読み）と英語の語彙を、正規表現で絞り込みます。例: <code>^..ん$</code>　<code>^c.t$</code>　<code>東京.</code></p>
+    <p class="hint">日本語（漢字／読み）と英語の語彙を、正規表現で絞り込みます。下で <code>？</code> や候補リストから式を作れます。</p>
     <div class="toolbar">
       <label>対象
         <select id="src">
@@ -32,6 +50,21 @@
       </label>
       <label class="chk"><input type="checkbox" id="full" checked /> 語全体にマッチ（^…$）</label>
       <label class="chk"><input type="checkbox" id="icase" checked /> 大文字小文字を無視</label>
+    </div>
+    <div class="make">
+      <h2>正規表現をつくる</h2>
+      <p class="hint"><code>？</code> と <code>?</code> は1文字。<code>[あいう]</code> はそのまま使います。例: <code>？？あ？</code> → <code>^..あ.$</code></p>
+      <div class="row">
+        <input id="hole" type="text" lang="ja" placeholder="？？あ？　または　？？[あいう]？" />
+        <button type="button" class="act" id="hole-go">穴埋めから作る</button>
+      </div>
+      <p class="hint">候補を1行1語。位置は「2文字目、1文字目」や <code>2,1,1</code>。各位置の文字を <code>[]</code> に並べます（候補の順、重複あり）。</p>
+      <textarea id="cands" placeholder="あか&#10;あお&#10;きいろ&#10;みどり"></textarea>
+      <div class="row">
+        <input id="pos" type="text" lang="ja" placeholder="2文字目、1文字目、1文字目" />
+        <button type="button" class="act" id="pick-go">文字拾いから作る</button>
+      </div>
+      <p class="parsed" id="made"></p>
     </div>
     <div class="row">
       <input id="pat" type="text" placeholder="正規表現" />

@@ -561,7 +561,27 @@
     }).join("");
   }
 
-  function convertAll(T, text, key) {
+  function pickNth(text, spec) {
+    const raw = (spec || "").trim();
+    if (!raw) return null;
+    const zen = "０１２３４５６７８９";
+    const normalized = [...raw].map((ch) => {
+      const i = zen.indexOf(ch);
+      return i >= 0 ? String(i) : ch;
+    }).join("");
+    const nums = normalized.match(/\d+/g);
+    if (!nums) return null;
+    const chars = [...(text || "")].filter((ch) => !/\s/.test(ch));
+    return nums
+      .map((n) => {
+        const i = +n;
+        if (i < 1 || i > chars.length) return "・";
+        return chars[i - 1];
+      })
+      .join("");
+  }
+
+  function convertAll(T, text, key, pick) {
     const rows = [];
     const add = (group, name, value) => {
       if (value == null) return;
@@ -576,6 +596,9 @@
     } else {
       add("暗号", "ヴィジュネル", "上に英字の鍵を入れると暗号化・復号します");
     }
+    const picked = pickNth(text, pick);
+    if (picked != null) add("解析", "文字拾い", picked);
+    else add("解析", "文字拾い", "本文の上に 10 9 のように位置を入れると拾います（空白は飛ばす）");
     add("符号化", "Base64", b64encode(text));
     const d64 = tryB64decode(text);
     if (d64 != null) add("符号化", "Base64（復号）", d64);
@@ -627,7 +650,7 @@
         parseTokens,
         decodeAll: (tokens) => decodeAll(T, schemes, tokens),
         reverseLookup: (q) => reverseLookup(T, schemes, q),
-        convertAll: (text, key) => convertAll(T, text, key),
+        convertAll: (text, key, pick) => convertAll(T, text, key, pick),
       };
     });
 })();
