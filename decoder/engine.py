@@ -190,7 +190,7 @@ def build_schemes() -> list[Scheme]:
         _list_scheme("星座JP（五十音順）", T.CONSTELLATION_JP_GOJUON, also_initials=True),
         _list_scheme("惑星（日本語読み）", T.PLANETS_JP, also_initials=True),
         _list_scheme("惑星（英語）", T.PLANETS_EN, also_initials=True),
-        _list_scheme("春夏秋冬（日本語）", T.SEASONS_JP),
+        _list_scheme("春夏秋冬（日本語）", T.SEASONS_JP, also_initials=True),
         _list_scheme("春夏秋冬（英語）", T.SEASONS_EN, also_initials=True),
         _list_scheme("ドレミファソラシ", T.SOLFEGE, also_initials=True),
         _list_scheme("CDEFGAB", T.SOLFEGE_CDEFGAB),

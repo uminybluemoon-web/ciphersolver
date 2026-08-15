@@ -139,7 +139,7 @@
       listScheme("星座JP（五十音順）", T.CONSTELLATION_JP_GOJUON, true),
       listScheme("惑星（日本語読み）", T.PLANETS_JP, true),
       listScheme("惑星（英語）", T.PLANETS_EN, true),
-      listScheme("春夏秋冬（日本語）", T.SEASONS_JP),
+      listScheme("春夏秋冬（日本語）", T.SEASONS_JP, true),
       listScheme("春夏秋冬（英語）", T.SEASONS_EN, true),
       listScheme("ドレミファソラシ", T.SOLFEGE, true),
       listScheme("CDEFGAB", T.SOLFEGE_CDEFGAB),
