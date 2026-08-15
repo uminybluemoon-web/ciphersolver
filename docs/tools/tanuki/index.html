@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>たぬき暗号</title>
+  <link rel="stylesheet" href="../../css/tool.css" />
+  <link rel="stylesheet" href="tanuki.css" />
+</head>
+<body>
+  <div class="wrap">
+    <h1>たぬき暗号</h1>
+    <p class="hint">指定した文字を抜いたとき、残りが辞書の語になる組み合わせを探します。既定は「た」抜きです。正規表現タブと同じ語彙を使います。</p>
+
+    <div class="toolbar">
+      <label>対象
+        <select id="src">
+          <option value="hira">日本語・読み（ひらがな）</option>
+          <option value="kanji">日本語・漢字</option>
+          <option value="en">英語</option>
+        </select>
+      </label>
+      <label>消す文字
+        <input id="drop" type="text" lang="ja" value="た" />
+      </label>
+      <label>残り最低文字数
+        <select id="minlen">
+          <option value="1">1</option>
+          <option value="2" selected>2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+        </select>
+      </label>
+      <label>最大件数
+        <input id="limit" type="number" min="10" max="5000" value="400" />
+      </label>
+    </div>
+    <div class="row">
+      <input id="text" type="text" lang="ja" placeholder="解読する文、または残りたい語（例: ぬき）" />
+    </div>
+    <div class="toolbar">
+      <button type="button" class="act" id="decode">文字を抜く</button>
+      <button type="button" class="act" id="encode">抜くとこの語になる単語</button>
+      <button type="button" class="act" id="pairs">辞書ペアを探す</button>
+    </div>
+    <p class="hint">「文字を抜く」は入力から消す文字を除きます。「抜くとこの語になる単語」は、消したあと入力と一致する辞書語です。「辞書ペア」はどちらも辞書にある組み合わせです。</p>
+    <p class="parsed" id="status">消す文字を確認してボタンを押してください。初回はその辞書を読み込みます。</p>
+    <p class="err" id="err"></p>
+    <p class="norm" id="norm"></p>
+    <div class="hits" id="hits"></div>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>

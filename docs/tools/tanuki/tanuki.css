@@ -1,0 +1,23 @@
+.hits { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.hits span, .pair {
+  background: var(--paper-2);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-family: Consolas, "Yu Gothic UI", monospace;
+  cursor: pointer;
+}
+.pair { display: inline-flex; align-items: baseline; gap: 6px; }
+.pair .from .drop { color: var(--accent); text-decoration: line-through; }
+.pair .arrow { color: var(--muted); }
+#drop, #limit { width: auto; max-width: 8em; }
+select { width: auto; }
+.err { color: #8b3d2f; }
+.norm { color: var(--muted); font-size: 13px; min-height: 1.2em; }
+.big {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  margin: 8px 0;
+}
+.big .drop { color: var(--accent); text-decoration: line-through; }
