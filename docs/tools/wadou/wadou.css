@@ -1,28 +1,24 @@
+.coin-scroll {
+  overflow-x: auto;
+  margin: 18px 0;
+}
 .coin {
   display: grid;
-  grid-template-columns: 72px 56px 72px 56px 72px;
-  grid-template-rows: 64px 40px 64px 40px 64px;
   justify-content: center;
   align-items: center;
-  margin: 18px 0;
   gap: 4px;
+  width: max-content;
+  margin: 0 auto;
 }
 .coin input {
-  width: 72px;
-  height: 56px;
+  width: 64px;
+  height: 52px;
   text-align: center;
   font-size: 22px;
 }
-.center {
-  width: 72px;
-  height: 56px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.coin input.center {
   border: 2px dashed var(--line);
-  border-radius: 8px;
   background: #efe8d8;
-  font-size: 22px;
 }
 .arrow {
   font: inherit;
@@ -31,6 +27,7 @@
   background: var(--paper-2);
   border-radius: 8px;
   height: 36px;
+  min-width: 40px;
 }
 .arrow:hover { border-color: var(--accent); }
 .arm-off { opacity: 0.35; pointer-events: none; }
@@ -41,7 +38,7 @@
 }
 .sol button {
   font: inherit;
-  font-size: 22px;
+  font-size: 18px;
   min-width: 48px;
   padding: 8px;
   cursor: pointer;
@@ -51,6 +48,18 @@
 }
 .sol button:hover { border-color: var(--accent); }
 .words { color: var(--muted); font-size: 13px; margin-top: 8px; }
+.sol-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  font-size: 16px;
+}
+.sol-table th, .sol-table td {
+  border: 1px solid var(--line);
+  padding: 6px 8px;
+  text-align: center;
+}
+.sol-table th { color: var(--muted); font-weight: 600; }
 select, input[type="number"] {
   font: inherit;
   padding: 6px 8px;

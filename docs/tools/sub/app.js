@@ -193,6 +193,21 @@
     }
   });
 
+  document.getElementById("freq-en").addEventListener("click", () => {
+    const lets = lettersOf(cipherEl.value);
+    const c = counts(lets);
+    const keys = Object.keys(c)
+      .filter((k) => k >= "A" && k <= "Z")
+      .sort((a, b) => c[b] - c[a] || (a < b ? -1 : 1));
+    for (const k of Object.keys(map)) {
+      if (k >= "A" && k <= "Z") delete map[k];
+    }
+    keys.forEach((k, i) => {
+      if (i < ETAOIN.length) map[k] = ETAOIN[i];
+    });
+    selected = null;
+    render();
+  });
   document.getElementById("reset").addEventListener("click", () => {
     for (const k of Object.keys(map)) delete map[k];
     selected = null;
