@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>記号↔文字</title>
+  <link rel="stylesheet" href="../../css/tool.css" />
+  <link rel="stylesheet" href="glyphs.css" />
+</head>
+<body>
+  <div class="wrap">
+    <h1>記号 ↔ 文字</h1>
+    <p class="hint">記号をクリックすると文字が、文字を入れると記号が出ます。写真の自動読み取りはまだありません。</p>
+    <div class="inner-tabs" id="kind-tabs">
+      <button type="button" class="inner-tab is-active" data-kind="braille">点字</button>
+      <button type="button" class="inner-tab" data-kind="pigpen">ピッグペン</button>
+      <button type="button" class="inner-tab" data-kind="dancing">踊る人形</button>
+    </div>
+
+    <textarea id="text" placeholder="ここに文字（Hello / あいう）"></textarea>
+    <div class="toolbar">
+      <button type="button" class="act" id="clear">クリア</button>
+      <button type="button" class="act" id="copy-text">文字をコピー</button>
+      <span class="hint" id="note"></span>
+    </div>
+    <div class="parsed">記号プレビュー（クリックでも入力）</div>
+    <div class="preview" id="preview"></div>
+    <div class="parsed">記号パレット</div>
+    <div id="extra"></div>
+    <div class="keys" id="keys"></div>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
