@@ -101,7 +101,11 @@ CipherReady.then((C) => {
       document.getElementById("conv-out").textContent = "文字列を入力してください";
       return;
     }
-    lastConv = C.convertAll(raw, document.getElementById("vig-key").value, document.getElementById("pick-idx").value);
+    lastConv = C.convertAll(
+      raw,
+      document.getElementById("vig-key")?.value || "",
+      document.getElementById("pick-idx")?.value || ""
+    );
     renderConv();
   }
   function renderConv() {
@@ -114,10 +118,10 @@ CipherReady.then((C) => {
   }
   document.getElementById("conv-go").addEventListener("click", runConv);
   document.getElementById("conv-caesar").addEventListener("change", () => { if (lastConv.length) renderConv(); });
-  document.getElementById("vig-key").addEventListener("keydown", (e) => {
+  document.getElementById("vig-key")?.addEventListener("keydown", (e) => {
     if (e.key === "Enter") runConv();
   });
-  document.getElementById("pick-idx").addEventListener("keydown", (e) => {
+  document.getElementById("pick-idx")?.addEventListener("keydown", (e) => {
     if (e.key === "Enter") runConv();
   });
   document.getElementById("conv-in").addEventListener("keydown", (e) => {
