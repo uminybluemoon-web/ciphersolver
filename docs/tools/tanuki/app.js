@@ -131,6 +131,81 @@
       : `残り「${left}」は辞書にありません ／ 辞書 ${dict.set.size} 語`;
   }
 
+  function renderPairs(list, drop, rightOf) {
+    const frag = document.createDocumentFragment();
+    list.forEach((w) => {
+      const el = document.createElement("span");
+      el.className = "pair";
+      el.appendChild(markDropped(w, drop));
+      if (rightOf) {
+        const ar = document.createElement("span");
+        ar.className = "arrow";
+        ar.textContent = "→";
+        el.appendChild(ar);
+        el.append(rightOf(w));
+        addCopy(el, w + " → " + rightOf(w));
+      } else addCopy(el, w);
+      frag.appendChild(el);
+    });
+    hits.appendChild(frag);
+  }
+
+  function hasAnagramRun(w, needle) {
+    const need = [...needle];
+    const nlen = need.length;
+    if (!nlen) return false;
+    const chars = [...w];
+    if (chars.length < nlen) return false;
+    const key = need.slice().sort().join("");
+    for (let i = 0; i <= chars.length - nlen; i++) {
+      if (chars.slice(i, i + nlen).sort().join("") === key) return true;
+    }
+    return false;
+  }
+
+  async function contain() {
+    err.textContent = "";
+    hits.innerHTML = "";
+    const { src, minlen, limit } = opts();
+    const drop = dropSet(src);
+    const needle = normalize(textEl.value, src);
+    if (!needle) {
+      showErr("含む文字列を入力してください");
+      return;
+    }
+    let dict;
+    try {
+      dict = await load(src);
+    } catch (e) {
+      err.textContent = "辞書の読み込みに失敗しました";
+      status.textContent = "";
+      return;
+    }
+    const scrambled = document.getElementById("anagram").checked;
+    const found = [];
+    for (const w of dict.list) {
+      if (w.length < minlen) continue;
+      if (scrambled) {
+        if (!hasAnagramRun(w, needle)) continue;
+      } else if (!w.includes(needle)) continue;
+      found.push(w);
+    }
+    found.sort((a, b) => {
+      const da = [...a].some((ch) => drop.has(ch)) ? 0 : 1;
+      const db = [...b].some((ch) => drop.has(ch)) ? 0 : 1;
+      return da - db || a.length - b.length || (a < b ? -1 : 1);
+    });
+    const extra = found.length > limit;
+    const show = extra ? found.slice(0, limit) : found;
+    status.textContent = extra
+      ? `含む ${limit}+ 件（表示 ${show.length}）／ 辞書 ${dict.set.size} 語`
+      : `含む ${show.length} 件 ／ 辞書 ${dict.set.size} 語`;
+    normEl.textContent =
+      (scrambled ? `「${needle}」を順不同で含む` : `「${needle}」を含む`) +
+      (drop.size ? "　（消す文字ありを先に表示）" : "");
+    renderPairs(show, drop, null);
+  }
+
   async function encode() {
     err.textContent = "";
     hits.innerHTML = "";
@@ -161,31 +236,16 @@
     for (const w of dict.list) {
       if (w === target) continue;
       if (![...w].some((ch) => drop.has(ch))) continue;
-      if (strip(w, drop) === target) {
-        found.push(w);
-        if (found.length >= limit) break;
-      }
+      if (strip(w, drop) === target) found.push(w);
     }
     found.sort((a, b) => a.length - b.length || (a < b ? -1 : 1));
-    const extra = found.length >= limit;
+    const extra = found.length > limit;
+    const show = extra ? found.slice(0, limit) : found;
     status.textContent = extra
-      ? `${limit}+ 件（表示 ${found.length}）／ 辞書 ${dict.set.size} 語`
-      : `${found.length} 件 ／ 辞書 ${dict.set.size} 語`;
+      ? `${limit}+ 件（表示 ${show.length}）／ 辞書 ${dict.set.size} 語`
+      : `${show.length} 件 ／ 辞書 ${dict.set.size} 語`;
     normEl.textContent = `目標「${target}」`;
-    const frag = document.createDocumentFragment();
-    found.forEach((w) => {
-      const el = document.createElement("span");
-      el.className = "pair";
-      el.appendChild(markDropped(w, drop));
-      const ar = document.createElement("span");
-      ar.className = "arrow";
-      ar.textContent = "→";
-      el.appendChild(ar);
-      el.append(target);
-      addCopy(el, w + " → " + target);
-      frag.appendChild(el);
-    });
-    hits.appendChild(frag);
+    renderPairs(show, drop, () => target);
   }
 
   async function pairs() {
@@ -210,37 +270,23 @@
       if (![...w].some((ch) => drop.has(ch))) continue;
       const left = strip(w, drop);
       if (left.length < minlen || left === w) continue;
-      if (dict.set.has(left)) {
-        found.push([w, left]);
-        if (found.length >= limit) break;
-      }
+      if (dict.set.has(left)) found.push(w);
     }
-    found.sort((a, b) => a[0].length - b[0].length || (a[0] < b[0] ? -1 : 1));
-    const extra = found.length >= limit;
+    found.sort((a, b) => a.length - b.length || (a < b ? -1 : 1));
+    const extra = found.length > limit;
+    const show = extra ? found.slice(0, limit) : found;
     status.textContent = extra
-      ? `ペア ${limit}+ 件（表示 ${found.length}）／ 辞書 ${dict.set.size} 語`
-      : `ペア ${found.length} 件 ／ 辞書 ${dict.set.size} 語`;
+      ? `ペア ${limit}+ 件（表示 ${show.length}）／ 辞書 ${dict.set.size} 語`
+      : `ペア ${show.length} 件 ／ 辞書 ${dict.set.size} 語`;
     normEl.textContent = `消す文字：${[...drop].join(" ")}`;
-    const frag = document.createDocumentFragment();
-    found.forEach(([w, left]) => {
-      const el = document.createElement("span");
-      el.className = "pair";
-      el.appendChild(markDropped(w, drop));
-      const ar = document.createElement("span");
-      ar.className = "arrow";
-      ar.textContent = "→";
-      el.appendChild(ar);
-      el.append(left);
-      addCopy(el, w + " → " + left);
-      frag.appendChild(el);
-    });
-    hits.appendChild(frag);
+    renderPairs(show, drop, (w) => strip(w, drop));
   }
 
   document.getElementById("decode").addEventListener("click", decode);
+  document.getElementById("contain").addEventListener("click", contain);
   document.getElementById("encode").addEventListener("click", encode);
   document.getElementById("pairs").addEventListener("click", pairs);
   textEl.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") decode();
+    if (e.key === "Enter") contain();
   });
 })();

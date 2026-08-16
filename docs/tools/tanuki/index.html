@@ -36,14 +36,16 @@
       </label>
     </div>
     <div class="row">
-      <input id="text" type="text" lang="ja" placeholder="解読する文、または残りたい語（例: ぬき）" />
+      <input id="text" type="text" lang="ja" placeholder="例: から　／　ぬき　／　たぬき" />
     </div>
     <div class="toolbar">
       <button type="button" class="act" id="decode">文字を抜く</button>
+      <button type="button" class="act" id="contain">含む単語を探す</button>
+      <label class="chk"><input type="checkbox" id="anagram" /> 順不同</label>
       <button type="button" class="act" id="encode">抜くとこの語になる単語</button>
       <button type="button" class="act" id="pairs">辞書ペアを探す</button>
     </div>
-    <p class="hint">「文字を抜く」は入力から消す文字を除きます。「抜くとこの語になる単語」は、消したあと入力と一致する辞書語です。「辞書ペア」はどちらも辞書にある組み合わせです。</p>
+    <p class="hint">「含む単語」は入力を部分に持つ語です（から → たから）。「順不同」をオンにすると並びを無視します（たから → あらかた）。</p>
     <p class="parsed" id="status">消す文字を確認してボタンを押してください。初回はその辞書を読み込みます。</p>
     <p class="err" id="err"></p>
     <p class="norm" id="norm"></p>
