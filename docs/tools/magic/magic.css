@@ -1,0 +1,57 @@
+h2 { font-size: 16px; margin: 8px 0; }
+.layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+@media (max-width: 700px) {
+  .layout { grid-template-columns: 1fr; }
+}
+.grid-wrap {
+  display: grid;
+  gap: 4px;
+}
+.grid-wrap input {
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  text-align: center;
+  font-size: 18px;
+}
+select { width: auto; }
+.sol-grid {
+  display: grid;
+  gap: 2px;
+  margin-bottom: 8px;
+}
+.err { color: #8b3d2f; }
+.sols { display: flex; flex-wrap: wrap; gap: 12px; }
+.sol-card {
+  border: 1px solid var(--line);
+  background: var(--paper-2);
+  border-radius: 8px;
+  padding: 10px;
+}
+.sol-grid span {
+  width: 26px;
+  height: 26px;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  background: #fffdf8;
+}
+.sol-pick {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+.sol-pick small {
+  display: block;
+  font-weight: 400;
+  color: var(--muted);
+  font-size: 12px;
+  letter-spacing: 0;
+}

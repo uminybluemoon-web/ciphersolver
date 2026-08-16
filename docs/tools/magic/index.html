@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>魔方陣ソルバー</title>
+  <link rel="stylesheet" href="../../css/tool.css" />
+  <link rel="stylesheet" href="magic.css" />
+</head>
+<body>
+  <div class="wrap">
+    <h1>魔方陣ソルバー</h1>
+    <p class="hint">1〜n² の魔方陣です。3×3 は和15、4×4 は和34。左に分かっている数字、右に文字を入れ、解析で候補と 1,2,3… 順の文字拾いを出します。</p>
+    <div class="toolbar">
+      <label>サイズ
+        <select id="size">
+          <option value="3">3×3（1〜9）</option>
+          <option value="4">4×4（1〜16）</option>
+        </select>
+      </label>
+    </div>
+    <div class="layout">
+      <section>
+        <h2>数字</h2>
+        <div class="grid-wrap" id="num-grid"></div>
+        <p class="hint" id="num-hint">1〜9。同じ数字は1回だけ。行・列・対角線の和は15。</p>
+      </section>
+      <section>
+        <h2>文字</h2>
+        <div class="grid-wrap letters" id="ch-grid"></div>
+        <p class="hint" id="ch-hint">拾い用。解析すると、1 があるマスの文字、次に 2…の順に並べます。</p>
+      </section>
+    </div>
+    <div class="toolbar">
+      <button type="button" class="act" id="go">解析</button>
+      <button type="button" class="act" id="clear-num">数字をクリア</button>
+      <button type="button" class="act" id="clear-ch">文字をクリア</button>
+      <button type="button" class="act" id="sample">サンプル</button>
+    </div>
+    <p class="parsed" id="status">数字が空なら、3×3 は8通りすべてを出します。4×4 は多いので表示は一部です。</p>
+    <p class="err" id="err"></p>
+    <div id="sols" class="sols"></div>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
