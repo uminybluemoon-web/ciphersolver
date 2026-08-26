@@ -24,13 +24,61 @@
   const HAN = { ぱ: "は", ぴ: "ひ", ぷ: "ふ", ぺ: "へ", ぽ: "ほ" };
   const DAKU_MARK = "⠐";
   const HAN_MARK = "⠠";
+  const YOON_MARK = "⠈";
+  const YOON_DAKU_MARK = "⠘";
+  const YOON_HAN_MARK = "⠨";
+  const YOON_SMALL = { ゃ: "あ", ゅ: "う", ょ: "お", ャ: "あ", ュ: "う", ョ: "お" };
+  const YOON_CONS = {
+    き: "plain", し: "plain", ち: "plain", に: "plain", ひ: "plain", み: "plain", り: "plain",
+    ぎ: "daku", じ: "daku", ぢ: "daku", び: "daku",
+    ぴ: "han",
+  };
+  const YOON_CELL = {
+    き: { あ: "か", う: "く", お: "こ" },
+    し: { あ: "さ", う: "す", お: "そ" },
+    ち: { あ: "た", う: "つ", お: "と" },
+    に: { あ: "な", う: "ぬ", お: "の" },
+    ひ: { あ: "は", う: "ふ", お: "ほ" },
+    み: { あ: "ま", う: "む", お: "も" },
+    り: { あ: "ら", う: "る", お: "ろ" },
+    ぎ: { あ: "か", う: "く", お: "こ" },
+    じ: { あ: "さ", う: "す", お: "そ" },
+    ぢ: { あ: "た", う: "つ", お: "と" },
+    び: { あ: "は", う: "ふ", お: "ほ" },
+    ぴ: { あ: "は", う: "ふ", お: "ほ" },
+  };
+  const YOON_FROM = {
+    か: "きゃ", く: "きゅ", こ: "きょ",
+    さ: "しゃ", す: "しゅ", そ: "しょ",
+    た: "ちゃ", つ: "ちゅ", と: "ちょ",
+    な: "にゃ", ぬ: "にゅ", の: "にょ",
+    は: "ひゃ", ふ: "ひゅ", ほ: "ひょ",
+    ま: "みゃ", む: "みゅ", も: "みょ",
+    ら: "りゃ", る: "りゅ", ろ: "りょ",
+  };
+  const YOON_DAKU_FROM = {
+    か: "ぎゃ", く: "ぎゅ", こ: "ぎょ",
+    さ: "じゃ", す: "じゅ", そ: "じょ",
+    た: "ぢゃ", つ: "ぢゅ", と: "ぢょ",
+    は: "びゃ", ふ: "びゅ", ほ: "びょ",
+  };
+  const YOON_HAN_FROM = { は: "ぴゃ", ふ: "ぴゅ", ほ: "ぴょ" };
 
   const AZ = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+  function toHiraCh(ch) {
+    const c = ch.codePointAt(0);
+    if (c >= 0x30a1 && c <= 0x30f6) return String.fromCodePoint(c - 0x60);
+    if (ch === "ヵ" || ch === "ヶ") return ch === "ヵ" ? "か" : "け";
+    return ch;
+  }
 
   function brailleEncode(text) {
     let out = "";
     let inNum = false;
-    for (const ch of text) {
+    const chars = [...text];
+    for (let i = 0; i < chars.length; i++) {
+      let ch = toHiraCh(chars[i]);
       if (/\d/.test(ch)) {
         if (!inNum) {
           out += NUM_SIGN;
@@ -47,6 +95,15 @@
       const low = ch.toLowerCase();
       if (low >= "a" && low <= "z") {
         out += BRAILLE_AZ[low.charCodeAt(0) - 97];
+        continue;
+      }
+      const next = i + 1 < chars.length ? toHiraCh(chars[i + 1]) : "";
+      const vow = YOON_SMALL[next];
+      if (vow && YOON_CONS[ch] && YOON_CELL[ch] && YOON_CELL[ch][vow]) {
+        const kind = YOON_CONS[ch];
+        const mark = kind === "daku" ? YOON_DAKU_MARK : kind === "han" ? YOON_HAN_MARK : YOON_MARK;
+        out += mark + KANA[YOON_CELL[ch][vow]];
+        i++;
         continue;
       }
       if (HAN[ch]) {
@@ -66,9 +123,7 @@
     return out;
   }
 
-  function brailleDecode(text) {
-    const azRev = {};
-    for (let i = 0; i < 26; i++) azRev[BRAILLE_AZ[i]] = AZ[i];
+  function brailleDecodeJa(text) {
     const dRev = {};
     [...BRAILLE_D].forEach((c, i) => {
       dRev[c] = String(i);
@@ -85,9 +140,10 @@
     for (const ch of text) {
       if (ch === NUM_SIGN) {
         inNum = true;
+        mark = "";
         continue;
       }
-      if (ch === DAKU_MARK || ch === HAN_MARK) {
+      if (ch === DAKU_MARK || ch === HAN_MARK || ch === YOON_MARK || ch === YOON_DAKU_MARK || ch === YOON_HAN_MARK) {
         mark = ch;
         inNum = false;
         continue;
@@ -105,16 +161,76 @@
       inNum = false;
       if (kanaRev[ch]) {
         let k = kanaRev[ch];
-        if (mark === DAKU_MARK && dakuRev[k]) k = dakuRev[k];
-        if (mark === HAN_MARK && hanRev[k]) k = hanRev[k];
+        if (mark === YOON_MARK && YOON_FROM[k]) k = YOON_FROM[k];
+        else if (mark === YOON_DAKU_MARK && YOON_DAKU_FROM[k]) k = YOON_DAKU_FROM[k];
+        else if (mark === YOON_HAN_MARK && YOON_HAN_FROM[k]) k = YOON_HAN_FROM[k];
+        else if (mark === DAKU_MARK && dakuRev[k]) k = dakuRev[k];
+        else if (mark === HAN_MARK && hanRev[k]) k = hanRev[k];
         mark = "";
         out += k;
         continue;
       }
       mark = "";
-      out += azRev[ch] || "?";
+      out += "?";
     }
     return out;
+  }
+
+  function brailleDecodeEn(text) {
+    const azRev = {};
+    for (let i = 0; i < 26; i++) azRev[BRAILLE_AZ[i]] = AZ[i];
+    const dRev = {};
+    [...BRAILLE_D].forEach((c, i) => {
+      dRev[c] = String(i);
+    });
+    let out = "";
+    let inNum = false;
+    let caps = false;
+    for (const ch of text) {
+      if (ch === NUM_SIGN) {
+        inNum = true;
+        continue;
+      }
+      if (ch === HAN_MARK) {
+        caps = true;
+        inNum = false;
+        continue;
+      }
+      if (ch === DAKU_MARK || ch === YOON_MARK || ch === YOON_DAKU_MARK || ch === YOON_HAN_MARK) {
+        inNum = false;
+        continue;
+      }
+      if (ch === " ") {
+        inNum = false;
+        caps = false;
+        out += " ";
+        continue;
+      }
+      if (inNum && dRev[ch] != null) {
+        out += dRev[ch];
+        continue;
+      }
+      inNum = false;
+      if (azRev[ch]) {
+        out += caps ? azRev[ch] : azRev[ch].toLowerCase();
+        caps = false;
+        continue;
+      }
+      caps = false;
+      out += "?";
+    }
+    return out;
+  }
+
+  function brailleDecode(text) {
+    return brailleDecodeJa(text);
+  }
+
+  function looksLikeBraille(s) {
+    s = (s || "").trim();
+    if (!s) return false;
+    const br = [...s].filter((ch) => ch >= "\u2800" && ch <= "\u28FF").length;
+    return br >= Math.max(1, [...s.replace(/ /g, "")].length / 2);
   }
 
   const PIG_WALLS = {
@@ -447,7 +563,7 @@
   const note = document.getElementById("note");
 
   const NOTES = {
-    braille: "欧文点字＋日本語点字（あ行〜ん）。6点をクリックして1文字ずつ足せます。",
+    braille: "欧文点字と日本語点字（濁点・半濁点・拗音きゃ行など）を同時に出します。6点パッドでも1文字ずつ足せます。",
     pigpen: "フリーメイソン式（格子＋点＋X）。A–Z のみ。",
     dancing: "踊る人形は原作では18文字だけ。不足分は姿勢で補完した完成版です。語末は旗。",
     morse: "符号・欧文・和文を同時に出します。点・線をクリックするか、文字／モールスを直接入力。",
@@ -462,8 +578,15 @@
     if (kind === "morse") extra.appendChild(morsePad());
     if (kind === "sema") extra.appendChild(gengaPad());
     const kana = "あいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよらりるれろわをん";
+    const youon = [
+      "きゃ", "きゅ", "きょ", "しゃ", "しゅ", "しょ", "ちゃ", "ちゅ", "ちょ",
+      "にゃ", "にゅ", "にょ", "ひゃ", "ひゅ", "ひょ", "みゃ", "みゅ", "みょ",
+      "りゃ", "りゅ", "りょ", "ぎゃ", "ぎゅ", "ぎょ", "じゃ", "じゅ", "じょ",
+      "びゃ", "びゅ", "びょ", "ぴゃ", "ぴゅ", "ぴょ",
+    ];
     let letters;
-    if (kind === "braille" || kind === "morse" || kind === "sema") letters = [...AZ, ...kana];
+    if (kind === "braille") letters = [...AZ, ...kana, ...youon];
+    else if (kind === "morse" || kind === "sema") letters = [...AZ, ...kana];
     else letters = [...AZ];
     letters.forEach((L) => {
       const b = document.createElement("button");
@@ -617,8 +740,20 @@
         : "原画をクリックし、原姿で1文字確定";
     }
     if (kind === "braille") {
-      preview.style.fontSize = "28px";
-      preview.textContent = brailleEncode(t);
+      const empty = !t.trim();
+      const cells = looksLikeBraille(t) ? t : brailleEncode(t);
+      preview.style.fontSize = "";
+      preview.innerHTML = empty
+        ? dualBox([
+            { lbl: "点字", val: "（文字または点字を入力）" },
+            { lbl: "和文", val: "—" },
+            { lbl: "欧文", val: "—" },
+          ])
+        : dualBox([
+            { lbl: "点字", val: `<span style="font-size:28px;line-height:1.2">${cells}</span>` },
+            { lbl: "和文", val: brailleDecodeJa(cells) },
+            { lbl: "欧文", val: brailleDecodeEn(cells) },
+          ]);
     } else if (kind === "pigpen") {
       preview.innerHTML = pigpenEncode(t) || "（A–Z）";
     } else if (kind === "dancing") {

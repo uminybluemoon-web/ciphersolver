@@ -12,7 +12,7 @@
 
   async function load(key) {
     if (cache[key]) return cache[key];
-    status.textContent = "辞書を読み込み中…";
+    status.textContent = "広辞書を読み込み中…（初回のみ）";
     const r = await fetch(FILES[key]);
     const data = await r.json();
     cache[key] = data;
