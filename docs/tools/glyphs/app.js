@@ -555,6 +555,125 @@
 
   let gengaBuf = [];
 
+  // Elder Futhark (24). Digraphs TH / NG / EI first when encoding.
+  const ELDER_RUNES = [
+    ["\u16A0", "F"], ["\u16A2", "U"], ["\u16A6", "TH"], ["\u16A8", "A"], ["\u16B1", "R"], ["\u16B2", "K"],
+    ["\u16B7", "G"], ["\u16B9", "W"], ["\u16BA", "H"], ["\u16BE", "N"], ["\u16C1", "I"], ["\u16C3", "J"],
+    ["\u16C7", "EI"], ["\u16C8", "P"], ["\u16C9", "Z"], ["\u16CA", "S"], ["\u16CF", "T"], ["\u16D2", "B"],
+    ["\u16D6", "E"], ["\u16D7", "M"], ["\u16DA", "L"], ["\u16DC", "NG"], ["\u16DE", "D"], ["\u16DF", "O"],
+  ];
+  const ELDER_TO_LAT = Object.fromEntries(ELDER_RUNES.map(([r, l]) => [r, l]));
+  // Younger Futhark (long-branch) + shared Elder forms for alternate reading.
+  const YOUNGER_TO_LAT = {
+    "\u16A0": "F", "\u16A2": "U", "\u16A6": "TH", "\u16AC": "O", "\u16B1": "R", "\u16B4": "K",
+    "\u16BC": "H", "\u16BE": "N", "\u16C1": "I", "\u16C5": "A", "\u16CB": "S", "\u16CF": "T",
+    "\u16D2": "B", "\u16D8": "M", "\u16DA": "L", "\u16E6": "R",
+    "\u16A8": "A", "\u16B2": "K", "\u16BA": "H", "\u16CA": "S", "\u16D7": "M", "\u16D6": "E",
+    "\u16DE": "D", "\u16DF": "O", "\u16B7": "G", "\u16B9": "W", "\u16C3": "J", "\u16C8": "P",
+    "\u16C9": "Z", "\u16DC": "NG", "\u16C7": "EI",
+  };
+
+  function looksLikeRunes(s) {
+    s = (s || "").trim();
+    if (!s) return false;
+    const runes = [...s].filter((ch) => ch >= "\u16A0" && ch <= "\u16FF").length;
+    return runes >= Math.max(1, [...s.replace(/\s/g, "")].length / 2);
+  }
+
+  function runeEncodeElder(text) {
+    let out = "";
+    const s = (text || "").toUpperCase().replace(/\u00DE/g, "TH");
+    const map = {
+      A: "\u16A8", B: "\u16D2", C: "\u16B2", D: "\u16DE", E: "\u16D6", F: "\u16A0", G: "\u16B7", H: "\u16BA",
+      I: "\u16C1", J: "\u16C3", K: "\u16B2", L: "\u16DA", M: "\u16D7", N: "\u16BE", O: "\u16DF", P: "\u16C8",
+      Q: "\u16B2", R: "\u16B1", S: "\u16CA", T: "\u16CF", U: "\u16A2", V: "\u16A2", W: "\u16B9", X: "\u16B2\u16CA",
+      Y: "\u16C3", Z: "\u16C9",
+    };
+    for (let i = 0; i < s.length; ) {
+      const ch = s[i];
+      if (ch === " " || ch === "\u3000" || ch === "\n" || ch === "\t") {
+        out += " ";
+        i++;
+        continue;
+      }
+      if (ch === ":" || ch === "\u00B7" || ch === "\u16EB") {
+        out += "\u16EB";
+        i++;
+        continue;
+      }
+      if (s.startsWith("TH", i)) {
+        out += "\u16A6";
+        i += 2;
+        continue;
+      }
+      if (s.startsWith("NG", i)) {
+        out += "\u16DC";
+        i += 2;
+        continue;
+      }
+      if (s.startsWith("EI", i)) {
+        out += "\u16C7";
+        i += 2;
+        continue;
+      }
+      if (map[ch]) {
+        out += map[ch];
+        i++;
+        continue;
+      }
+      out += "?";
+      i++;
+    }
+    return out;
+  }
+
+  function runeDecode(text, table) {
+    let out = "";
+    for (const ch of text) {
+      if (ch === " " || ch === "\u3000" || ch === "\n" || ch === "\t") {
+        out += " ";
+        continue;
+      }
+      if (ch === "\u16EB" || ch === ":" || ch === "\u00B7") {
+        out += " ";
+        continue;
+      }
+      if (ch >= "\u16A0" && ch <= "\u16FF") {
+        out += table[ch] || "?";
+        continue;
+      }
+      if (/[A-Za-z]/.test(ch)) {
+        out += ch.toUpperCase();
+        continue;
+      }
+      out += ch;
+    }
+    return out;
+  }
+
+  function runePad() {
+    const wrap = document.createElement("div");
+    wrap.style.marginBottom = "8px";
+    const row = document.createElement("div");
+    row.className = "keys";
+    ELDER_RUNES.forEach(([rune, lat]) => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "key";
+      b.innerHTML = `<span style="font-size:26px;line-height:1">${rune}</span><small>${lat}</small>`;
+      b.addEventListener("click", () => appendText(rune));
+      row.appendChild(b);
+    });
+    const sep = document.createElement("button");
+    sep.type = "button";
+    sep.className = "key";
+    sep.innerHTML = `<span style="font-size:22px">\u16EB</span><small>区切り</small>`;
+    sep.addEventListener("click", () => appendText("\u16EB"));
+    row.appendChild(sep);
+    wrap.appendChild(row);
+    return wrap;
+  }
+
   let kind = "braille";
   const textEl = document.getElementById("text");
   const keysEl = document.getElementById("keys");
@@ -566,6 +685,7 @@
     braille: "欧文点字と日本語点字（濁点・半濁点・拗音きゃ行など）を同時に出します。6点パッドでも1文字ずつ足せます。",
     pigpen: "フリーメイソン式（格子＋点＋X）。A–Z のみ。",
     dancing: "踊る人形は原作では18文字だけ。不足分は姿勢で補完した完成版です。語末は旗。",
+    rune: "Elder Futhark（24文字）が主です。TH/\u16A6、NG/\u16DC、EI/\u16C7。C·K→\u16B2、V·U→\u16A2、Y·J→\u16C3。ルーンを貼るとラテン読みも出します。",
     morse: "符号・欧文・和文を同時に出します。点・線をクリックするか、文字／モールスを直接入力。",
     sema: "欧文は国際セマフォア、和文は日本の原画（右手赤・左手白、受信者から見た形）。両方同時に出ます。",
   };
@@ -575,6 +695,7 @@
     extra.innerHTML = "";
     note.textContent = NOTES[kind];
     if (kind === "braille") extra.appendChild(braillePad());
+    if (kind === "rune") extra.appendChild(runePad());
     if (kind === "morse") extra.appendChild(morsePad());
     if (kind === "sema") extra.appendChild(gengaPad());
     const kana = "あいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよらりるれろわをん";
@@ -599,6 +720,9 @@
         b.innerHTML = pigpenSvg(L, 40) + `<small>${L}</small>`;
       } else if (kind === "dancing") {
         b.innerHTML = dancingSvg(L, false, 40) + `<small>${L}</small>`;
+      } else if (kind === "rune") {
+        const g = runeEncodeElder(L);
+        b.innerHTML = `<span style="font-size:26px;line-height:1">${g}</span><small>${L}</small>`;
       } else if (kind === "morse") {
         const pat = MORSE_AZ[L] || WABUN_MORSE[L] || "";
         b.innerHTML = `<span style="font-size:13px">${pat}</span><small>${L}</small>`;
@@ -758,6 +882,20 @@
       preview.innerHTML = pigpenEncode(t) || "（A–Z）";
     } else if (kind === "dancing") {
       preview.innerHTML = dancingEncode(t) || "（A–Z。空白で語末に旗）";
+    } else if (kind === "rune") {
+      const empty = !t.trim();
+      const cells = looksLikeRunes(t) ? t : runeEncodeElder(t);
+      preview.innerHTML = empty
+        ? dualBox([
+            { lbl: "ルーン", val: "（ラテン文字またはルーンを入力）" },
+            { lbl: "Elder", val: "—" },
+            { lbl: "Younger", val: "—" },
+          ])
+        : dualBox([
+            { lbl: "ルーン", val: `<span style="font-size:28px;line-height:1.2">${cells}</span>` },
+            { lbl: "Elder", val: runeDecode(cells, ELDER_TO_LAT) },
+            { lbl: "Younger", val: runeDecode(cells, YOUNGER_TO_LAT) },
+          ]);
     } else if (kind === "morse") {
       const words = looksLikeMorse(t) ? parseMorseTokens(t) : textToMorseTokens(t);
       const empty = !t.trim();
