@@ -439,6 +439,99 @@
     return br >= Math.max(1, [...s.replace(/ /g, "")].length / 2);
   }
 
+  const ELDER_TO_LAT = {
+    "\u16A0": "F", "\u16A2": "U", "\u16A6": "TH", "\u16A8": "A", "\u16B1": "R", "\u16B2": "K",
+    "\u16B7": "G", "\u16B9": "W", "\u16BA": "H", "\u16BE": "N", "\u16C1": "I", "\u16C3": "J",
+    "\u16C7": "EI", "\u16C8": "P", "\u16C9": "Z", "\u16CA": "S", "\u16CF": "T", "\u16D2": "B",
+    "\u16D6": "E", "\u16D7": "M", "\u16DA": "L", "\u16DC": "NG", "\u16DE": "D", "\u16DF": "O",
+  };
+  const YOUNGER_TO_LAT = {
+    "\u16A0": "F", "\u16A2": "U", "\u16A6": "TH", "\u16AC": "O", "\u16B1": "R", "\u16B4": "K",
+    "\u16BC": "H", "\u16BE": "N", "\u16C1": "I", "\u16C5": "A", "\u16CB": "S", "\u16CF": "T",
+    "\u16D2": "B", "\u16D8": "M", "\u16DA": "L", "\u16E6": "R",
+    "\u16A8": "A", "\u16B2": "K", "\u16BA": "H", "\u16CA": "S", "\u16D7": "M", "\u16D6": "E",
+    "\u16DE": "D", "\u16DF": "O", "\u16B7": "G", "\u16B9": "W", "\u16C3": "J", "\u16C8": "P",
+    "\u16C9": "Z", "\u16DC": "NG", "\u16C7": "EI",
+  };
+
+  function looksLikeRunes(s) {
+    s = (s || "").trim();
+    if (!s) return false;
+    const runes = [...s].filter((ch) => ch >= "\u16A0" && ch <= "\u16FF").length;
+    return runes >= Math.max(1, [...s.replace(/\s/g, "")].length / 2);
+  }
+
+  function runeEncodeElder(text) {
+    let out = "";
+    const s = (text || "").toUpperCase().replace(/\u00DE/g, "TH");
+    const map = {
+      A: "\u16A8", B: "\u16D2", C: "\u16B2", D: "\u16DE", E: "\u16D6", F: "\u16A0", G: "\u16B7", H: "\u16BA",
+      I: "\u16C1", J: "\u16C3", K: "\u16B2", L: "\u16DA", M: "\u16D7", N: "\u16BE", O: "\u16DF", P: "\u16C8",
+      Q: "\u16B2", R: "\u16B1", S: "\u16CA", T: "\u16CF", U: "\u16A2", V: "\u16A2", W: "\u16B9", X: "\u16B2\u16CA",
+      Y: "\u16C3", Z: "\u16C9",
+    };
+    for (let i = 0; i < s.length; ) {
+      const ch = s[i];
+      if (ch === " " || ch === "\u3000" || ch === "\n" || ch === "\t") {
+        out += " ";
+        i++;
+        continue;
+      }
+      if (ch === ":" || ch === "\u00B7" || ch === "\u16EB") {
+        out += "\u16EB";
+        i++;
+        continue;
+      }
+      if (s.startsWith("TH", i)) {
+        out += "\u16A6";
+        i += 2;
+        continue;
+      }
+      if (s.startsWith("NG", i)) {
+        out += "\u16DC";
+        i += 2;
+        continue;
+      }
+      if (s.startsWith("EI", i)) {
+        out += "\u16C7";
+        i += 2;
+        continue;
+      }
+      if (map[ch]) {
+        out += map[ch];
+        i++;
+        continue;
+      }
+      out += "?";
+      i++;
+    }
+    return out;
+  }
+
+  function runeDecode(text, table) {
+    let out = "";
+    for (const ch of text) {
+      if (ch === " " || ch === "\u3000" || ch === "\n" || ch === "\t") {
+        out += " ";
+        continue;
+      }
+      if (ch === "\u16EB" || ch === ":" || ch === "\u00B7") {
+        out += " ";
+        continue;
+      }
+      if (ch >= "\u16A0" && ch <= "\u16FF") {
+        out += table[ch] || "?";
+        continue;
+      }
+      if (/[A-Za-z]/.test(ch)) {
+        out += ch.toUpperCase();
+        continue;
+      }
+      out += ch;
+    }
+    return out;
+  }
+
   function rotAz(text, shift) {
     return [...text].map((ch) => {
       if (ch >= "A" && ch <= "Z") return String.fromCharCode(((ch.charCodeAt(0) - 65 + shift) % 26) + 65);
@@ -664,6 +757,13 @@
       rows.push(["点字（和文）", brailleDecodeJa(q)]);
       rows.push(["点字（欧文）", brailleDecodeEn(q)]);
     }
+    if (looksLikeRunes(q)) {
+      rows.push(["ルーン（Elder）", runeDecode(q, ELDER_TO_LAT)]);
+      rows.push(["ルーン（Younger）", runeDecode(q, YOUNGER_TO_LAT)]);
+    } else {
+      const runes = runeEncodeElder(q);
+      if (runes && !runes.includes("?")) rows.push(["ルーン（Elder）", runes]);
+    }
 
     const exactNames = new Set();
     for (const scheme of schemes) {
@@ -786,6 +886,12 @@
     if (looksLikeBraille(text)) {
       add("符号", "点字（和文）", brailleDecodeJa(text));
       add("符号", "点字（欧文）", brailleDecodeEn(text));
+    }
+    if (looksLikeRunes(text)) {
+      add("符号", "ルーン（Elder）", runeDecode(text, ELDER_TO_LAT));
+      add("符号", "ルーン（Younger）", runeDecode(text, YOUNGER_TO_LAT));
+    } else {
+      add("符号", "ルーン（Elder）", runeEncodeElder(text));
     }
     add("符号", "みかか", mikakaEncode(T, text));
     const mkParts = text.trim().split(/[\s,]+/).filter(Boolean);

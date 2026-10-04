@@ -85,7 +85,7 @@ CipherReady.then((C) => {
     }
     box.replaceChildren(
       table(["変換", "該当"], rows, (cols) =>
-        /^(ASCII／|モールス|みかか|点字)/.test(cols[0]) ? "code" : ""
+        /^(ASCII／|モールス|みかか|点字|ルーン)/.test(cols[0]) ? "code" : ""
       )
     );
   }

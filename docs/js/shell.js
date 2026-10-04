@@ -34,7 +34,8 @@
     renderNav(tab.id);
     if (frame.getAttribute("data-id") !== tab.id) {
       frame.setAttribute("data-id", tab.id);
-      frame.src = tab.file;
+      const bust = "v=20260404r2";
+      frame.src = tab.file + (tab.file.includes("?") ? "&" : "?") + bust;
     }
     document.title = tab.title + " · ツール箱";
   }
